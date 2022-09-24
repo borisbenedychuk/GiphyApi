@@ -17,7 +17,8 @@ import kotlin.reflect.KClass
 )
 interface GifListComponent {
     val viewModelFactory: ViewModelFactory
-    val imageLoader: ImageLoader
+    val gifImageLoader: ImageLoader
+    val previewImageLoader: ImageLoader
 }
 
 @Module

@@ -10,8 +10,12 @@ data class GifEntity(
     @PrimaryKey
     @ColumnInfo(name = "id")
     val id: String,
+    @ColumnInfo(name = "page")
+    val page: Int,
     @ColumnInfo(name = "gif_url")
     val gifUrl: String,
+    @ColumnInfo(name = "preview_url")
+    val previewUrl: String,
     @ColumnInfo(name = "title")
     val title: String,
     @ColumnInfo(name = "query")
@@ -21,6 +25,7 @@ data class GifEntity(
         id = id,
         title = title,
         gifUrl = gifUrl,
+        previewUrl = previewUrl,
     )
 }
 

@@ -14,15 +14,17 @@ data class ScreenState<T>(
 data class GifScreenState(
     val isFinished: Boolean = false,
     val items: List<GifItem>,
-) {
-    companion object {
-        fun fromGifModels(models: List<GifModel>) = GifScreenState(
-            items = models.map { GifItem(title = it.title, gifUrl = it.gifUrl) }
-        )
-    }
-}
+    val query: String = "",
+)
 
 data class GifItem(
     val title: String,
     val gifUrl: String,
+    val previewUrl: String,
+)
+
+fun GifModel.asItem() = GifItem(
+    title = title,
+    gifUrl = gifUrl,
+    previewUrl = previewUrl,
 )

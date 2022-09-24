@@ -23,17 +23,27 @@ class GifDataResponse(
         @Serializable
         data class Images(
             @SerialName("original")
-            val original: Original? = null
+            val original: Original? = null,
+            @SerialName("fixed_height_small_still")
+            val preview: Preview? = null,
         )
 
         @Serializable
         data class Original(
+            @SerialName("url")
             val url: String? = null
+        )
+
+        @Serializable
+        data class Preview(
+            @SerialName("url")
+            val url: String? = null,
         )
 
         fun asGifEntity(query: String) = GifEntity(
             id = id.orEmpty(),
             gifUrl = images?.original?.url.orEmpty(),
+            previewUrl = images?.preview?.url.orEmpty(),
             title = title.orEmpty(),
             query = query,
         )

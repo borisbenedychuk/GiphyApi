@@ -18,6 +18,9 @@ import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.json.Json
 import okhttp3.MediaType.Companion.toMediaType
 import retrofit2.Retrofit
+import java.io.File
+import javax.inject.Named
+import javax.inject.Qualifier
 import javax.inject.Scope
 import kotlin.reflect.KClass
 
@@ -73,17 +76,18 @@ class BasicModule {
 
     @Provides
     @Scoped(BasicComponent::class)
-    fun provideImageLoader(context: Context): ImageLoader =
-        ImageLoader.Builder(context)
-            .crossfade(true)
+    fun provideGifImageLoader(context: Context): ImageLoader {
+        val gifDir = File(context.cacheDir.path, "gifs")
+        if (!gifDir.exists()) gifDir.mkdir()
+        return ImageLoader.Builder(context)
             .memoryCache {
                 MemoryCache.Builder(context)
-                    .maxSizePercent(1.0)
+                    .maxSizePercent(0.25)
                     .build()
             }
             .diskCache {
                 DiskCache.Builder()
-                    .directory(context.cacheDir)
+                    .directory(gifDir)
                     .maxSizePercent(0.05)
                     .build()
             }
@@ -95,6 +99,7 @@ class BasicModule {
                 }
             }
             .build()
+    }
 }
 
 private const val BASE_URL = "https://api.giphy.com/v1/gifs/"
