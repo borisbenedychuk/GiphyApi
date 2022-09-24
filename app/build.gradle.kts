@@ -16,9 +16,6 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-        vectorDrawables {
-            useSupportLibrary = true
-        }
         buildConfigField("String", "API_KEY", "\"${property("API_KEY")}\"")
     }
 
@@ -85,5 +82,7 @@ dependencies {
     implementation("com.google.dagger:dagger:$dagger")
     kapt("com.google.dagger:dagger-compiler:$dagger")
     kapt("androidx.room:room-compiler:$room")
+    implementation("com.google.accompanist:accompanist-pager:0.26.4-beta")
+    implementation("com.google.accompanist:accompanist-swiperefresh:0.26.4-beta")
 
 }
