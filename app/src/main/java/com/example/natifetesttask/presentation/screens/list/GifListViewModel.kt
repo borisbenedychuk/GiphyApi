@@ -14,7 +14,7 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-private const val PAGE = 30
+const val PAGE = 16
 
 class GifListViewModel @Inject constructor(
     private val repository: GifRepository,
@@ -25,37 +25,46 @@ class GifListViewModel @Inject constructor(
 
     private var offset = 0
     private var currentJob: Job? = null
+    private var page = 0
 
     fun queryGifs(query: String) {
         currentJob?.cancel()
         offset = 0
+        page = 0
         screenState = screenState.copy(data = screenState.data?.copy(query = query))
-        currentJob = viewModelScope.launch {
-            requestGifs(query, 0)
-            launch {
-                repository.observeGifs(query).collect { models ->
-                    val gifState = GifScreenState(
-                        query = screenState.data?.query.orEmpty(),
-                        items = models.map { it.asItem() },
-                    )
-                    screenState = ScreenState(data = gifState)
-                }
-            }
-        }
+        observePages(query, page)
     }
 
-    fun requestMoreGifs() {
+    fun deleteItemById(id: String) = viewModelScope.launch { repository.addGifToBlackList(id) }
+
+    fun boundChanged(signal: BoundSignal) {
         val query = screenState.data?.query ?: return
-        requestGifs(query, offset)
+        if (signal == BoundSignal.BOTTOM_REACHED) {
+            page++
+        } else if (signal == BoundSignal.TOP_REACHED && page > 2) {
+            page--
+        }
+        observePages(query, page)
     }
 
-    private fun requestGifs(query: String, offset: Int) {
-        viewModelScope.launch {
-            val result = repository.getGifs(query, PAGE, offset)
-            if (result is Result.Error) {
-                screenState = screenState.copy(errors = listOf("${result.code} ${result.msg}"))
-            } else {
-                this@GifListViewModel.offset += PAGE
+    private fun observePages(query: String, page: Int) {
+        currentJob?.cancel()
+        currentJob = viewModelScope.launch {
+            when (val result = repository.getPages(query, page)) {
+                is Result.Success -> {
+                    result.data?.let { flow ->
+                        flow.collect { list ->
+                            val gifState = GifScreenState(
+                                query = screenState.data?.query.orEmpty(),
+                                items = list.map { it.asItem() },
+                            )
+                            screenState = ScreenState(data = gifState)
+                        }
+                    }
+                }
+                is Result.Error -> {
+
+                }
             }
         }
     }

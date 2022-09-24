@@ -14,8 +14,8 @@ class RemoteGifDatasourceImpl @Inject constructor(
     override suspend fun getGifs(
         query: String,
         limit: Int,
-        offset: Int
-    ): Result<List<GifDataResponse.GifResponse>> {
+        offset: Int,
+    ): Result<GifDataResponse> {
         return safeApiCall {
             api.searchGifs(
                 apiKey = BuildConfig.API_KEY,
@@ -23,6 +23,6 @@ class RemoteGifDatasourceImpl @Inject constructor(
                 limit = limit,
                 offset = offset
             )
-        }.map { it.gifs }
+        }
     }
 }

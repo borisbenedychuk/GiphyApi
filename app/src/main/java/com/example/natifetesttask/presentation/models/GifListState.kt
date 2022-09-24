@@ -15,16 +15,21 @@ data class GifScreenState(
     val isFinished: Boolean = false,
     val items: List<GifItem>,
     val query: String = "",
+    val page: Int = 0,
 )
 
 data class GifItem(
+    val id: String,
     val title: String,
-    val gifUrl: String,
+    val originalUrl: String,
+    val smallUrl: String,
     val previewUrl: String,
 )
 
 fun GifModel.asItem() = GifItem(
+    id = id,
     title = title,
-    gifUrl = gifUrl,
+    originalUrl = originalUrl,
+    smallUrl = smallUrl,
     previewUrl = previewUrl,
 )

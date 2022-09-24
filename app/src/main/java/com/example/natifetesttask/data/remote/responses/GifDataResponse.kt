@@ -7,8 +7,16 @@ import kotlinx.serialization.Serializable
 @Serializable
 class GifDataResponse(
     @SerialName("data")
-    val gifs: List<GifResponse>
+    val gifs: List<GifResponse?>? = null,
+    @SerialName("pagination")
+    val pagination: Pagination? = null,
 ) {
+
+    @Serializable
+    data class Pagination(
+        @SerialName("total_count")
+        val totalCount: Int? = null,
+    )
 
     @Serializable
     data class GifResponse(
@@ -23,29 +31,27 @@ class GifDataResponse(
         @Serializable
         data class Images(
             @SerialName("original")
-            val original: Original? = null,
+            val original: UrlHolder? = null,
+            @SerialName("fixed_height")
+            val small: UrlHolder? = null,
             @SerialName("fixed_height_small_still")
-            val preview: Preview? = null,
+            val preview: UrlHolder? = null,
         )
 
         @Serializable
-        data class Original(
+        data class UrlHolder(
             @SerialName("url")
             val url: String? = null
         )
 
-        @Serializable
-        data class Preview(
-            @SerialName("url")
-            val url: String? = null,
-        )
-
-        fun asGifEntity(query: String) = GifEntity(
+        fun asGifEntity(query: String, page: Int) = GifEntity(
             id = id.orEmpty(),
-            gifUrl = images?.original?.url.orEmpty(),
-            previewUrl = images?.preview?.url.orEmpty(),
             title = title.orEmpty(),
             query = query,
+            page = page,
+            originalUrl = images?.original?.url.orEmpty(),
+            previewUrl = images?.preview?.url.orEmpty(),
+            smallUrl = images?.small?.url.orEmpty(),
         )
     }
 }
