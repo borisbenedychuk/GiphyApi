@@ -24,7 +24,7 @@ import kotlinx.coroutines.withContext
 
 @Composable
 fun GifSearchScreen() {
-    val component = getGifListComponent()
+    val component = getGifSearchComponent()
     val viewModel = viewModel<GifSearchViewModel>(factory = component.viewModelFactory)
     GifSearchUI(
         imageLoader = component.imageLoader,
@@ -82,13 +82,11 @@ private fun GifSearchUI(
 
 
 @Composable
-private fun getGifListComponent(): GifSearchComponent {
+private fun getGifSearchComponent(): GifSearchComponent {
     val context = LocalContext.current
-    val appComponent = context.appComponent
     return remember {
         DaggerGifSearchComponent.builder()
-            .gifRepositoryProvider(appComponent.gifRepository)
-            .commonProvider(appComponent)
+            .gifSearchDependencies(context.appComponent)
             .build()
     }
 }

@@ -4,9 +4,20 @@ import android.app.Application
 import android.content.Context
 import com.example.natifetesttask.app.di.AppComponent
 import com.example.natifetesttask.app.di.DaggerAppComponent
+import kotlinx.coroutines.MainScope
+import kotlinx.coroutines.launch
 
 class App : Application() {
+
     val component: AppComponent by lazy { DaggerAppComponent.factory().create(this) }
+
+    override fun onCreate() {
+        super.onCreate()
+        MainScope().launch {
+            val deleteOldData = component.deleteOldDataCacheUseCase
+            deleteOldData()
+        }
+    }
 }
 
 val Context.appComponent: AppComponent

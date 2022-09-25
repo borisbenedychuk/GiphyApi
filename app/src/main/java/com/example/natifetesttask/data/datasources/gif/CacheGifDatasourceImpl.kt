@@ -20,8 +20,17 @@ class CacheGifDatasourceImpl @Inject constructor(
     override suspend fun saveGifs(entities: List<GifEntity>) =
         gifDao.saveGifs(entities)
 
-    override suspend fun getQueryInfo(query: String) =
-        gifDao.getQueryInfo(query)
+    override suspend fun getQueryInfoEntity(query: String) =
+        gifDao.getQueryInfoEntity(query)
+
+    override suspend fun getQueryInfoEntities(): List<QueryInfoEntity> =
+        gifDao.getQueryInfoEntities()
+
+    override suspend fun clearQueryData(queries: List<String>) =
+        db.withTransaction {
+            gifDao.deleteQueryInfoEntities(queries)
+            gifDao.deleteQueryGifs(queries)
+        }
 
     override suspend fun saveQueryInfo(queryInfoEntity: QueryInfoEntity) =
         gifDao.saveQueryInfo(queryInfoEntity)

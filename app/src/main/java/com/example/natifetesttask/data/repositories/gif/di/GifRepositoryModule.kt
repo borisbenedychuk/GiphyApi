@@ -8,7 +8,7 @@ import com.example.natifetesttask.data.db.AppDB
 import com.example.natifetesttask.data.db.dao.GifDao
 import com.example.natifetesttask.data.remote.api.GifApi
 import com.example.natifetesttask.data.repositories.gif.GifRepositoryImpl
-import com.example.natifetesttask.domain.repository.GifRepository
+import com.example.natifetesttask.domain.repository.gif.GifRepository
 import dagger.Binds
 import dagger.Module
 import dagger.Provides

@@ -4,7 +4,7 @@ import coil.ImageLoader
 import com.example.natifetesttask.data.db.AppDB
 import retrofit2.Retrofit
 
-interface CommonProvider {
+interface CommonRepositoryDependencies {
     val retrofit: Retrofit
     val appDB: AppDB
     val imageLoader: ImageLoader

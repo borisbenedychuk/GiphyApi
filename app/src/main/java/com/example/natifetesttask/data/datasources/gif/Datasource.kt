@@ -20,7 +20,11 @@ interface CacheGifDatasource {
 
     suspend fun saveGifs(entities: List<GifEntity>)
 
-    suspend fun getQueryInfo(query: String): QueryInfoEntity?
+    suspend fun getQueryInfoEntity(query: String): QueryInfoEntity?
+
+    suspend fun getQueryInfoEntities(): List<QueryInfoEntity>
+
+    suspend fun clearQueryData(queries: List<String>)
 
     suspend fun saveQueryInfo(queryInfoEntity: QueryInfoEntity)
 

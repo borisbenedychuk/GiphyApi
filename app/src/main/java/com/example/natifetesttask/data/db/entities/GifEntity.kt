@@ -2,7 +2,7 @@ package com.example.natifetesttask.data.db.entities
 
 import androidx.room.ColumnInfo
 import androidx.room.Entity
-import com.example.natifetesttask.domain.model.GifModel
+import com.example.natifetesttask.domain.model.gif.GifModel
 
 @Entity(tableName = "gif", primaryKeys = ["id", "query"])
 data class GifEntity(

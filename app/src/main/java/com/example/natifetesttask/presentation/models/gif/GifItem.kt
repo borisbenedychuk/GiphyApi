@@ -1,6 +1,6 @@
 package com.example.natifetesttask.presentation.models.gif
 
-import com.example.natifetesttask.domain.model.GifModel
+import com.example.natifetesttask.domain.model.gif.GifModel
 
 data class GifItem(
     val id: String,

@@ -1,4 +1,4 @@
-package com.example.natifetesttask.domain.model
+package com.example.natifetesttask.domain.model.gif
 
 data class GifModel(
     val id: String,

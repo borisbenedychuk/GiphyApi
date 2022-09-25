@@ -1,16 +1,22 @@
 package com.example.natifetesttask.app.di
 
 import android.content.Context
-import com.example.natifetesttask.app.di.providers.CommonProvider
-import com.example.natifetesttask.app.di.providers.GifRepositoryProvider
+import com.example.natifetesttask.app.di.providers.CommonRepositoryDependencies
+import com.example.natifetesttask.domain.usecase.gif.DeleteOldDataCacheUseCase
+import com.example.natifetesttask.presentation.ui.gif.GifSearchDependencies
 import dagger.BindsInstance
 import dagger.Component
 
 @Scoped(AppComponent::class)
-@Component(modules = [GifComponentsModule::class, CommonModule::class])
-interface AppComponent : CommonProvider {
+@Component(
+    modules = [
+        GifComponentsModule::class,
+        CommonModule::class
+    ]
+)
+interface AppComponent : CommonRepositoryDependencies, GifSearchDependencies {
 
-    val gifRepository: GifRepositoryProvider
+    val deleteOldDataCacheUseCase: DeleteOldDataCacheUseCase
 
     @Component.Factory
     interface Factory {

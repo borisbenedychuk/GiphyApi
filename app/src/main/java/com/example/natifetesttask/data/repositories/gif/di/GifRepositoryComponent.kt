@@ -1,9 +1,14 @@
 package com.example.natifetesttask.data.repositories.gif.di
 
-import com.example.natifetesttask.app.di.providers.CommonProvider
-import com.example.natifetesttask.app.di.providers.GifRepositoryProvider
+import com.example.natifetesttask.app.di.providers.CommonRepositoryDependencies
+import com.example.natifetesttask.domain.repository.gif.GifRepository
 import dagger.Component
 
-@Component(modules = [GifRepositoryModule::class], dependencies = [CommonProvider::class])
-interface GifRepositoryComponent : GifRepositoryProvider
+@Component(
+    modules = [GifRepositoryModule::class],
+    dependencies = [CommonRepositoryDependencies::class],
+)
+interface GifRepositoryComponent {
+    val gifRepository: GifRepository
+}
 

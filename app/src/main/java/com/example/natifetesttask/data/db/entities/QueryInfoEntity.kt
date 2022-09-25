@@ -15,4 +15,6 @@ data class QueryInfoEntity(
     val totalPages: Int,
     @ColumnInfo(name = "saved_pages")
     val cachedPages: Int,
+    @ColumnInfo(name = "last_query_time")
+    val lastQueryTime: Long,
 )

@@ -16,7 +16,16 @@ interface GifDao {
     fun getGifs(query: String, pages: List<Int>): Flow<List<GifEntity>>
 
     @Query("SELECT * FROM queryInfo WHERE `query` = :query")
-    suspend fun getQueryInfo(query: String): QueryInfoEntity?
+    suspend fun getQueryInfoEntity(query: String): QueryInfoEntity?
+
+    @Query("SELECT * FROM queryInfo")
+    suspend fun getQueryInfoEntities(): List<QueryInfoEntity>
+
+    @Query("DELETE FROM gif WHERE `query` IN (:queries) ")
+    suspend fun deleteQueryGifs(queries: List<String>)
+
+    @Query("DELETE FROM queryInfo WHERE `query` IN (:queries) ")
+    suspend fun deleteQueryInfoEntities(queries: List<String>)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun saveGifs(entities: List<GifEntity>)
