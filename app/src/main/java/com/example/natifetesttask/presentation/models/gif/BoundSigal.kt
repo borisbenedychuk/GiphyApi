@@ -1,4 +1,4 @@
-package com.example.natifetesttask.presentation.models
+package com.example.natifetesttask.presentation.models.gif
 
 enum class BoundSignal {
     TOP_REACHED,

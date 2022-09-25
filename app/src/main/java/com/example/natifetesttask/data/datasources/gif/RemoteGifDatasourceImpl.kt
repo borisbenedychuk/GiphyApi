@@ -15,8 +15,8 @@ class RemoteGifDatasourceImpl @Inject constructor(
         query: String,
         limit: Int,
         offset: Int,
-    ): Result<GifDataResponse> {
-        return safeApiCall {
+    ): Result<GifDataResponse> =
+        safeApiCall {
             api.searchGifs(
                 apiKey = BuildConfig.API_KEY,
                 query = query,
@@ -24,5 +24,4 @@ class RemoteGifDatasourceImpl @Inject constructor(
                 offset = offset
             )
         }
-    }
 }

@@ -7,7 +7,7 @@ import com.example.natifetesttask.data.remote.responses.GifDataResponse
 import com.example.natifetesttask.domain.model.GifModel
 import com.example.natifetesttask.domain.repository.GifRepository
 import com.example.natifetesttask.domain.utils.Result
-import com.example.natifetesttask.presentation.ui.gif_search.PAGE
+import com.example.natifetesttask.presentation.ui.gif.PAGE
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
@@ -23,8 +23,7 @@ class GifRepositoryImpl @Inject constructor(
     override suspend fun getPages(query: String, currentPage: Int): Result<Flow<List<GifModel>>> =
         with(Dispatchers.Default) {
             val queryInfo = cache.getQueryInfo(query)
-            val result =
-                queryInfo?.let { regularLoad(query, currentPage, it) } ?: initialLoad(query)
+            val result = queryInfo?.let { regularLoad(query, currentPage, it) } ?: initialLoad(query)
             when (result) {
                 is Result.Error -> result
                 is Result.Success -> {

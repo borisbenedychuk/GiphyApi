@@ -1,4 +1,4 @@
-package com.example.natifetesttask.presentation.models
+package com.example.natifetesttask.presentation.models.gif
 
 import com.example.natifetesttask.domain.model.GifModel
 
@@ -7,7 +7,6 @@ data class GifItem(
     val title: String,
     val originalUrl: String,
     val smallUrl: String,
-    val previewUrl: String,
 )
 
 fun GifModel.asItem() = GifItem(
@@ -15,5 +14,4 @@ fun GifModel.asItem() = GifItem(
     title = title,
     originalUrl = originalUrl,
     smallUrl = smallUrl,
-    previewUrl = previewUrl,
 )

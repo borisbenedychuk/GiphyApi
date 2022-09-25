@@ -32,10 +32,8 @@ class GifDataResponse(
         data class Images(
             @SerialName("original")
             val original: UrlHolder? = null,
-            @SerialName("preview_gif")
+            @SerialName("fixed_height_small")
             val small: UrlHolder? = null,
-            @SerialName("fixed_height_small_still")
-            val preview: UrlHolder? = null,
         )
 
         @Serializable
@@ -50,7 +48,6 @@ class GifDataResponse(
             query = query,
             page = page,
             originalUrl = images?.original?.url.orEmpty(),
-            previewUrl = images?.preview?.url.orEmpty(),
             smallUrl = images?.small?.url.orEmpty(),
         )
     }

@@ -1,15 +1,16 @@
-package com.example.natifetesttask.presentation.models
+package com.example.natifetesttask.presentation.models.gif
 
 import androidx.compose.ui.unit.IntOffset
 
 data class GifSearchState(
-    val isFinished: Boolean = false,
     val items: List<GifItem> = emptyList(),
     val errors: List<String> = emptyList(),
     val loading: Boolean = false,
     val query: String = "",
     val page: Int = 0,
-    val detailsScreen: Boolean = false,
+    val isListFinished: Boolean = false,
+    val isDetailsScreen: Boolean = false,
+    val transitionInfo: TransitionInfo = TransitionInfo(),
 )
 
 data class TransitionInfo(

@@ -1,4 +1,4 @@
-package com.example.natifetesttask.presentation.ui.gif_search
+package com.example.natifetesttask.presentation.ui.gif
 
 import androidx.lifecycle.ViewModel
 import coil.ImageLoader
@@ -15,7 +15,7 @@ import dagger.multibindings.IntoMap
     dependencies = [GifRepositoryProvider::class, CommonProvider::class],
     modules = [GifListModule::class],
 )
-interface GifListComponent {
+interface GifSearchComponent {
     val viewModelFactory: ViewModelFactory
     val imageLoader: ImageLoader
 }
@@ -25,7 +25,7 @@ abstract class GifListModule {
 
     @Binds
     @IntoMap
-    @ViewModelKey(GifListViewModel::class)
-    abstract fun bindViewModel(viewModel: GifListViewModel): ViewModel
+    @ViewModelKey(GifSearchViewModel::class)
+    abstract fun bindViewModel(viewModel: GifSearchViewModel): ViewModel
 }
 

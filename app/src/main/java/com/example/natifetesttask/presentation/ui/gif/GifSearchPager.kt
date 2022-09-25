@@ -1,4 +1,4 @@
-package com.example.natifetesttask.presentation.ui.gif_search
+package com.example.natifetesttask.presentation.ui.gif
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
@@ -13,16 +13,21 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import coil.ImageLoader
 import coil.compose.AsyncImage
 import coil.compose.rememberAsyncImagePainter
-import com.example.natifetesttask.presentation.models.BoundSignal
-import com.example.natifetesttask.presentation.models.GifItem
+import com.example.natifetesttask.R
+import com.example.natifetesttask.presentation.models.gif.BoundSignal
+import com.example.natifetesttask.presentation.models.gif.GifItem
 import com.example.natifetesttask.presentation.utils.compose.rememberState
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.rememberPagerState
+import kotlin.math.abs
 
 @OptIn(ExperimentalPagerApi::class)
 @Composable
@@ -32,11 +37,11 @@ fun GifSearchPager(
     imageLoader: ImageLoader,
     onDeleteItem: (String) -> Unit,
     onBoundReached: (BoundSignal) -> Unit,
-    currentItemIndex: Int,
+    initialIndex: Int,
     onPageScrolled: (Int) -> Unit,
     onBackPressed: () -> Unit,
 ) {
-    val pagerState = rememberPagerState(currentItemIndex)
+    val pagerState = rememberPagerState(initialIndex)
     val boundSignal by remember {
         derivedStateOf {
             pagerState.run {
@@ -49,35 +54,7 @@ fun GifSearchPager(
             }
         }
     }
-    HorizontalPager(
-        count = items.size,
-        state = pagerState,
-        modifier = modifier
-            .fillMaxWidth()
-            .background(Color.Cyan),
-    ) { count ->
-        GifPagerItem(
-            item = items[count],
-            imageLoader = imageLoader,
-            onDeleteItem = onDeleteItem,
-        )
-    }
-    BackHandler(onBack = onBackPressed)
-    LaunchedEffect(pagerState.currentPage) {
-        onPageScrolled(pagerState.currentPage)
-    }
-    LaunchedEffect(boundSignal) {
-        if (boundSignal.isBoundReached) onBoundReached(boundSignal)
-    }
-}
-
-@Composable
-private fun GifPagerItem(
-    item: GifItem,
-    imageLoader: ImageLoader,
-    onDeleteItem: (String) -> Unit
-) {
-    var isLoading by rememberState(false)
+    val currentItem = items[pagerState.currentPage]
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -85,29 +62,29 @@ private fun GifPagerItem(
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         Spacer(modifier = Modifier.fillMaxHeight(0.1f))
-        AsyncImage(
-            model = item.originalUrl,
-            imageLoader = imageLoader,
-            onLoading = { isLoading = true },
-            onError = { isLoading = false },
-            onSuccess = { isLoading = false },
-            placeholder = rememberAsyncImagePainter(
-                model = item.smallUrl,
+        HorizontalPager(
+            count = items.size,
+            state = pagerState,
+            modifier = modifier.fillMaxWidth(),
+        ) { count ->
+            GifPagerItem(
+                item = items[count],
                 imageLoader = imageLoader,
-            ),
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(400.dp),
-            contentDescription = null
-        )
+                onDeleteItem = onDeleteItem,
+            )
+        }
         Text(
-            text = item.title,
-            style = MaterialTheme.typography.body1,
+            text = currentItem.title,
+            style = MaterialTheme.typography.body1.copy(fontSize = 20.sp),
             color = Color.White,
-            modifier = Modifier.padding(top = 30.dp)
+            modifier = Modifier
+                .padding(top = 30.dp)
+                .padding(horizontal = 20.dp)
+                .graphicsLayer { alpha = 1f - 2 * abs(pagerState.currentPageOffset) },
+            textAlign = TextAlign.Center,
         )
         IconButton(
-            onClick = { onDeleteItem(item.id) },
+            onClick = { onDeleteItem(currentItem.id) },
             modifier = Modifier
                 .padding(top = 30.dp)
                 .size(50.dp)
@@ -118,5 +95,36 @@ private fun GifPagerItem(
                 tint = MaterialTheme.colors.onError,
             )
         }
+        BackHandler(onBack = onBackPressed)
+        LaunchedEffect(pagerState.currentPage) {
+            onPageScrolled(pagerState.currentPage)
+        }
+        LaunchedEffect(boundSignal) {
+            if (boundSignal.isBoundReached) onBoundReached(boundSignal)
+        }
     }
+}
+
+@Composable
+private fun GifPagerItem(
+    item: GifItem,
+    imageLoader: ImageLoader,
+    onDeleteItem: (String) -> Unit
+) {
+    var isLoading by rememberState(false)
+    AsyncImage(
+        model = item.originalUrl,
+        imageLoader = imageLoader,
+        onLoading = { isLoading = true },
+        onError = { isLoading = false },
+        onSuccess = { isLoading = false },
+        placeholder = rememberAsyncImagePainter(
+            model = R.drawable.placeholder,
+            imageLoader = imageLoader,
+        ),
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(400.dp),
+        contentDescription = null
+    )
 }

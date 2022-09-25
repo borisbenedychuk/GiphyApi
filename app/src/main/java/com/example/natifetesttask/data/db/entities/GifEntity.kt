@@ -12,8 +12,6 @@ data class GifEntity(
     val page: Int,
     @ColumnInfo(name = "original_url")
     val originalUrl: String,
-    @ColumnInfo(name = "preview_url")
-    val previewUrl: String,
     @ColumnInfo(name = "small_url")
     val smallUrl: String,
     @ColumnInfo(name = "title")
@@ -26,7 +24,6 @@ data class GifEntity(
         title = title,
         originalUrl = originalUrl,
         smallUrl = smallUrl,
-        previewUrl = previewUrl,
     )
 }
 

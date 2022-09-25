@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">NatifeTestTask</string>
+    <style name="Theme" parent="android:Theme.Material.Light.NoActionBar"/>
 </resources>
