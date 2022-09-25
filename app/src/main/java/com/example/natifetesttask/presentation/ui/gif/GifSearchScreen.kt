@@ -96,7 +96,7 @@ private fun getGifListComponent(): GifSearchComponent {
 @OptIn(ExperimentalCoilApi::class)
 private suspend fun ImageLoader.deleteGifCoilCache(item: GifItem) = withContext(Dispatchers.IO) {
     with(item) {
-        listOf(originalUrl, smallUrl, previewUrl).forEach {
+        listOf(originalUrl, smallUrl).forEach {
             diskCache?.remove(it)
             memoryCache?.remove(MemoryCache.Key(it))
         }
