@@ -3,8 +3,8 @@ package com.example.natifetesttask.data.datasources.gif
 import com.example.natifetesttask.BuildConfig
 import com.example.natifetesttask.data.remote.api.GifApi
 import com.example.natifetesttask.data.remote.responses.GifDataResponse
+import com.example.natifetesttask.data.remote.safeApiCall
 import com.example.natifetesttask.domain.utils.Result
-import com.example.natifetesttask.domain.utils.safeApiCall
 import javax.inject.Inject
 
 class RemoteGifDatasourceImpl @Inject constructor(

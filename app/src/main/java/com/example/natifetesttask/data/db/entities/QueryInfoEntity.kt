@@ -5,7 +5,7 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 
 @Entity(tableName = "queryInfo")
-data class QueryInfo(
+data class QueryInfoEntity(
     @PrimaryKey
     @ColumnInfo(name = "query")
     val query: String,

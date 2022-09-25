@@ -1,4 +1,4 @@
-package com.example.natifetesttask.presentation.screens.list
+package com.example.natifetesttask.presentation.ui.gif_search
 
 import androidx.lifecycle.ViewModel
 import coil.ImageLoader

@@ -1,13 +1,14 @@
-package com.example.natifetesttask.presentation.screens.list
+package com.example.natifetesttask.presentation.ui.gif_search
 
-import androidx.activity.compose.BackHandler
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.grid.*
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.*
+import androidx.compose.material.CircularProgressIndicator
+import androidx.compose.material.Icon
+import androidx.compose.material.IconButton
+import androidx.compose.material.TextField
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.runtime.*
@@ -25,10 +26,8 @@ import coil.compose.rememberAsyncImagePainter
 import coil.memory.MemoryCache
 import com.example.natifetesttask.application.appComponent
 import com.example.natifetesttask.presentation.models.GifItem
+import com.example.natifetesttask.presentation.screens.list.DaggerGifListComponent
 import com.example.natifetesttask.presentation.ui_utils.compose.rememberState
-import com.google.accompanist.pager.ExperimentalPagerApi
-import com.google.accompanist.pager.HorizontalPager
-import com.google.accompanist.pager.rememberPagerState
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -37,25 +36,24 @@ import kotlinx.coroutines.withContext
 fun GifListScreen() {
     val component = getGifListComponent()
     val viewModel = viewModel<GifListViewModel>(factory = component.viewModelFactory)
-    viewModel.screenState.data.let {
-        GifList(
-            gifImageLoader = component.gifImageLoader,
-            items = it?.items.orEmpty(),
-            query = it?.query.orEmpty(),
-            onNewQuery = viewModel::queryGifs,
-            onBoundReached = viewModel::boundChanged,
-            onDeleteItem = viewModel::deleteItemById,
-        )
-    }
+    GifList(
+        gifImageLoader = component.gifImageLoader,
+        items = viewModel.gifSearchState.items,
+        query = viewModel.gifSearchState.query,
+        onNewQuery = viewModel::queryGifs,
+        onBoundReached = viewModel::boundReached,
+        onDeleteItem = viewModel::deleteItemById,
+    )
 }
 
 enum class BoundSignal {
-    TOP_REACHED, BOTTOM_REACHED, NONE;
+    TOP_REACHED,
+    BOTTOM_REACHED,
+    NONE;
 
     val isBoundReached: Boolean get() = this == TOP_REACHED || this == BOTTOM_REACHED
 }
 
-@OptIn(ExperimentalFoundationApi::class, ExperimentalCoilApi::class)
 @Composable
 private fun GifList(
     gifImageLoader: ImageLoader,
@@ -74,12 +72,12 @@ private fun GifList(
         var isDetailScreen by rememberState(false)
         var currentItemIndex by rememberState<Int>()
         if (isDetailScreen) {
-            GifPager(
+            GifSearchPager(
                 items = items,
                 gifLoader = gifImageLoader,
                 onDeleteItem = { id ->
                     onDeleteItem(id)
-                    val item = items.find { it.id == id } ?: return@GifPager
+                    val item = items.find { it.id == id } ?: return@GifSearchPager
                     scope.launch { gifImageLoader.deleteGifCoilCache(item) }
                 },
                 onBoundReached = onBoundReached,
@@ -88,13 +86,13 @@ private fun GifList(
                 onBackPressed = { isDetailScreen = false }
             )
         } else {
-            GifGrid(
+            GifSearchGrid(
                 items = items,
                 initialPage = currentItemIndex ?: 0,
                 gifLoader = gifImageLoader,
                 onDeleteItem = { id ->
                     onDeleteItem(id)
-                    val item = items.find { it.id == id } ?: return@GifGrid
+                    val item = items.find { it.id == id } ?: return@GifSearchGrid
                     scope.launch { gifImageLoader.deleteGifCoilCache(item) }
                 },
                 onBoundReached = onBoundReached,
@@ -107,103 +105,8 @@ private fun GifList(
     }
 }
 
-@OptIn(ExperimentalCoilApi::class)
-private suspend fun ImageLoader.deleteGifCoilCache(item: GifItem) = withContext(Dispatchers.IO) {
-    with(item) {
-        listOf(originalUrl, smallUrl, previewUrl).forEach {
-            diskCache?.remove(it)
-            memoryCache?.remove(MemoryCache.Key(it))
-        }
-    }
-}
-
-@OptIn(ExperimentalPagerApi::class)
 @Composable
-private fun GifPager(
-    modifier: Modifier = Modifier,
-    items: List<GifItem>,
-    gifLoader: ImageLoader,
-    onDeleteItem: (String) -> Unit,
-    onBoundReached: (BoundSignal) -> Unit,
-    currentItemIndex: Int,
-    onPageScrolled: (Int) -> Unit,
-    onBackPressed: () -> Unit,
-) {
-    val pagerState = rememberPagerState(currentItemIndex)
-    val boundSignal by remember {
-        derivedStateOf {
-            pagerState.run {
-                when {
-                    pageCount == 0 -> BoundSignal.NONE
-                    pageCount - currentPage <= 10 -> BoundSignal.BOTTOM_REACHED
-                    currentPage - 1 <= 10 -> BoundSignal.TOP_REACHED
-                    else -> BoundSignal.NONE
-                }
-            }
-        }
-    }
-    BackHandler(onBack = onBackPressed)
-    LaunchedEffect(pagerState.currentPage) {
-        onPageScrolled(pagerState.currentPage)
-    }
-    LaunchedEffect(boundSignal) {
-        if (boundSignal.isBoundReached) onBoundReached(boundSignal)
-    }
-    HorizontalPager(
-        count = items.size,
-        state = pagerState,
-        modifier = modifier
-            .fillMaxWidth()
-            .background(Color.Cyan),
-    ) { count ->
-        var isLoading by rememberState(false)
-        val item = items[count]
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(Color.Black),
-            horizontalAlignment = Alignment.CenterHorizontally,
-        ) {
-            Spacer(modifier = Modifier.fillMaxHeight(0.1f))
-            AsyncImage(
-                model = item.originalUrl,
-                imageLoader = gifLoader,
-                onLoading = { isLoading = true },
-                onError = { isLoading = false },
-                onSuccess = { isLoading = false },
-                placeholder = rememberAsyncImagePainter(
-                    model = item.smallUrl,
-                    imageLoader = gifLoader,
-                ),
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(400.dp),
-                contentDescription = null
-            )
-            Text(
-                text = item.title,
-                style = MaterialTheme.typography.body1,
-                color = Color.White,
-                modifier = Modifier.padding(top = 30.dp)
-            )
-            IconButton(
-                onClick = { onDeleteItem(item.id) },
-                modifier = Modifier
-                    .padding(top = 30.dp)
-                    .size(50.dp)
-            ) {
-                Icon(
-                    imageVector = Icons.Default.Delete,
-                    contentDescription = "delete gif",
-                    tint = MaterialTheme.colors.onError,
-                )
-            }
-        }
-    }
-}
-
-@Composable
-private fun GifGrid(
+private fun GifSearchGrid(
     modifier: Modifier = Modifier,
     initialPage: Int = 0,
     lazyListState: LazyGridState = rememberLazyGridState(initialPage),
@@ -256,7 +159,7 @@ private fun GifGrid(
                     modifier = Modifier
                         .aspectRatio(1f)
                         .clickable { onItemClick(items.indexOf(item)) },
-                    contentDescription = null
+                    contentDescription = null,
                 )
                 if (isLoading) {
                     CircularProgressIndicator(
@@ -274,7 +177,7 @@ private fun GifGrid(
                         onClick = { onDeleteItem(item.id) },
                         modifier = Modifier
                             .fillMaxSize(0.2f)
-                            .align(Alignment.TopEnd)
+                            .align(Alignment.TopEnd),
                     ) {
                         Icon(
                             imageVector = Icons.Default.Delete,
@@ -292,10 +195,19 @@ private fun getGifListComponent(): GifListComponent {
     val context = LocalContext.current
     val appComponent = context.appComponent
     return remember {
-        DaggerGifListComponent
-            .builder()
+        DaggerGifListComponent.builder()
             .gifRepositoryProvider(appComponent.provider)
             .basicProvider(appComponent.basicProvider)
             .build()
+    }
+}
+
+@OptIn(ExperimentalCoilApi::class)
+private suspend fun ImageLoader.deleteGifCoilCache(item: GifItem) = withContext(Dispatchers.IO) {
+    with(item) {
+        listOf(originalUrl, smallUrl, previewUrl).forEach {
+            diskCache?.remove(it)
+            memoryCache?.remove(MemoryCache.Key(it))
+        }
     }
 }

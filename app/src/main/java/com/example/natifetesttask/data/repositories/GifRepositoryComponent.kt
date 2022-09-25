@@ -9,7 +9,7 @@ import com.example.natifetesttask.data.db.AppDB
 import com.example.natifetesttask.data.db.dao.GifDao
 import com.example.natifetesttask.data.remote.api.GifApi
 import com.example.natifetesttask.domain.repository.GifRepository
-import com.example.natifetesttask.presentation.screens.list.GifRepositoryProvider
+import com.example.natifetesttask.presentation.ui.gif_search.GifRepositoryProvider
 import dagger.Binds
 import dagger.Component
 import dagger.Module
@@ -32,6 +32,7 @@ abstract class GifRepositoryModule {
     abstract fun bindRemoteDatasource(datasource: RemoteGifDatasourceImpl): RemoteGifDatasource
 
     companion object {
+
         @Provides
         fun provideGifApi(retrofit: Retrofit): GifApi = retrofit.create(GifApi::class.java)
 

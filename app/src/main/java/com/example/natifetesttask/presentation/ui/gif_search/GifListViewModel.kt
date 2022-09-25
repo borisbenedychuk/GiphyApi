@@ -1,4 +1,4 @@
-package com.example.natifetesttask.presentation.screens.list
+package com.example.natifetesttask.presentation.ui.gif_search
 
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -7,8 +7,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.natifetesttask.domain.repository.GifRepository
 import com.example.natifetesttask.domain.utils.Result
-import com.example.natifetesttask.presentation.models.GifScreenState
-import com.example.natifetesttask.presentation.models.ScreenState
+import com.example.natifetesttask.presentation.models.GifSearchState
 import com.example.natifetesttask.presentation.models.asItem
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
@@ -20,7 +19,7 @@ class GifListViewModel @Inject constructor(
     private val repository: GifRepository,
 ) : ViewModel() {
 
-    var screenState: ScreenState<GifScreenState> by mutableStateOf(ScreenState())
+    var gifSearchState: GifSearchState by mutableStateOf(GifSearchState(items = emptyList()))
         private set
 
     private var offset = 0
@@ -31,34 +30,34 @@ class GifListViewModel @Inject constructor(
         currentJob?.cancel()
         offset = 0
         page = 0
-        screenState = screenState.copy(data = screenState.data?.copy(query = query))
-        observePages(query, page)
+        gifSearchState = gifSearchState.copy(query = query)
+        observePages(query)
     }
 
     fun deleteItemById(id: String) = viewModelScope.launch { repository.addGifToBlackList(id) }
 
-    fun boundChanged(signal: BoundSignal) {
-        val query = screenState.data?.query ?: return
+    fun boundReached(signal: BoundSignal) {
+        val query = gifSearchState.query
         if (signal == BoundSignal.BOTTOM_REACHED) {
             page++
         } else if (signal == BoundSignal.TOP_REACHED && page > 2) {
             page--
         }
-        observePages(query, page)
+        observePages(query)
     }
 
-    private fun observePages(query: String, page: Int) {
+    private fun observePages(query: String) {
         currentJob?.cancel()
         currentJob = viewModelScope.launch {
             when (val result = repository.getPages(query, page)) {
                 is Result.Success -> {
                     result.data?.let { flow ->
                         flow.collect { list ->
-                            val gifState = GifScreenState(
-                                query = screenState.data?.query.orEmpty(),
+                            val newGifSearchState = GifSearchState(
+                                query = gifSearchState.query,
                                 items = list.map { it.asItem() },
                             )
-                            screenState = ScreenState(data = gifState)
+                            gifSearchState = newGifSearchState
                         }
                     }
                 }

@@ -10,8 +10,6 @@ import coil.disk.DiskCache
 import coil.memory.MemoryCache
 import com.example.natifetesttask.data.db.AppDB
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
-import dagger.BindsInstance
-import dagger.Component
 import dagger.Module
 import dagger.Provides
 import kotlinx.serialization.ExperimentalSerializationApi
@@ -19,8 +17,6 @@ import kotlinx.serialization.json.Json
 import okhttp3.MediaType.Companion.toMediaType
 import retrofit2.Retrofit
 import java.io.File
-import javax.inject.Named
-import javax.inject.Qualifier
 import javax.inject.Scope
 import kotlin.reflect.KClass
 
@@ -28,29 +24,11 @@ import kotlin.reflect.KClass
 @Retention(AnnotationRetention.RUNTIME)
 annotation class Scoped(val clazz: KClass<out Any>)
 
-@Scoped(BasicComponent::class)
-@Component(modules = [BasicModule::class])
-interface BasicComponent : BasicProvider {
-
-    @Component.Factory
-    interface Factory {
-        fun create(
-            @BindsInstance context: Context
-        ): BasicComponent
-    }
-}
-
-interface BasicProvider {
-    val retrofit: Retrofit
-    val appDB: AppDB
-    val imageLoader: ImageLoader
-}
-
 @Module
 class BasicModule {
 
     @Provides
-    @Scoped(BasicComponent::class)
+    @Scoped(AppComponent::class)
     fun provideDB(context: Context): AppDB =
         Room.databaseBuilder(context, AppDB::class.java, "AppDB")
             .fallbackToDestructiveMigration()
@@ -58,7 +36,7 @@ class BasicModule {
 
     @OptIn(ExperimentalSerializationApi::class)
     @Provides
-    @Scoped(BasicComponent::class)
+    @Scoped(AppComponent::class)
     fun provideRetrofit(json: Json) =
         Retrofit.Builder()
             .baseUrl(BASE_URL)
@@ -66,7 +44,7 @@ class BasicModule {
             .build()
 
     @Provides
-    @Scoped(BasicComponent::class)
+    @Scoped(AppComponent::class)
     fun provideJson() =
         Json {
             ignoreUnknownKeys = true
@@ -75,7 +53,7 @@ class BasicModule {
         }
 
     @Provides
-    @Scoped(BasicComponent::class)
+    @Scoped(AppComponent::class)
     fun provideGifImageLoader(context: Context): ImageLoader {
         val gifDir = File(context.cacheDir.path, "gifs")
         if (!gifDir.exists()) gifDir.mkdir()

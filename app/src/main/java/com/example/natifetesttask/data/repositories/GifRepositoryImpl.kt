@@ -2,12 +2,12 @@ package com.example.natifetesttask.data.repositories
 
 import com.example.natifetesttask.data.datasources.gif.CacheGifDatasource
 import com.example.natifetesttask.data.datasources.gif.RemoteGifDatasource
-import com.example.natifetesttask.data.db.entities.QueryInfo
+import com.example.natifetesttask.data.db.entities.QueryInfoEntity
 import com.example.natifetesttask.data.remote.responses.GifDataResponse
 import com.example.natifetesttask.domain.model.GifModel
 import com.example.natifetesttask.domain.repository.GifRepository
 import com.example.natifetesttask.domain.utils.Result
-import com.example.natifetesttask.presentation.screens.list.PAGE
+import com.example.natifetesttask.presentation.ui.gif_search.PAGE
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
@@ -58,17 +58,17 @@ class GifRepositoryImpl @Inject constructor(
     private suspend fun regularLoad(
         query: String,
         currentPage: Int,
-        currentQueryInfo: QueryInfo,
+        currentQueryInfoEntity: QueryInfoEntity,
     ): Result<Unit> {
         val upperBound = currentPage + 2
-        val allPagesInCache = upperBound <= currentQueryInfo.cachedPages - 1
-        val pageInBounds = currentPage <= currentQueryInfo.totalPages - 1
+        val allPagesInCache = upperBound <= currentQueryInfoEntity.cachedPages - 1
+        val pageInBounds = currentPage <= currentQueryInfoEntity.totalPages - 1
         return if (!allPagesInCache && pageInBounds) {
             val limit =
-                (upperBound - currentQueryInfo.cachedPages + 1).coerceAtMost(
-                    currentQueryInfo.totalPages - 1
+                (upperBound - currentQueryInfoEntity.cachedPages + 1).coerceAtMost(
+                    currentQueryInfoEntity.totalPages - 1
                 ) * PAGE
-            val offset = currentQueryInfo.cachedPages * PAGE
+            val offset = currentQueryInfoEntity.cachedPages * PAGE
             val result = remote.getGifs(
                 query = query,
                 limit = limit,
@@ -77,8 +77,8 @@ class GifRepositoryImpl @Inject constructor(
             handleResponse(
                 result = result,
                 query = query,
-                cachedPages = currentQueryInfo.cachedPages + limit / PAGE,
-                pageResolver = { currentQueryInfo.cachedPages + it / PAGE },
+                cachedPages = currentQueryInfoEntity.cachedPages + limit / PAGE,
+                pageResolver = { currentQueryInfoEntity.cachedPages + it / PAGE },
             )
         } else {
             Result.Success()
@@ -96,8 +96,8 @@ class GifRepositoryImpl @Inject constructor(
                 val blackList = cache.getBlacklistIds()
                 data.pagination?.totalCount?.let { count ->
                     val totalPages = count / PAGE + if (count % PAGE != 0) 1 else 0
-                    val newQueryInfo = QueryInfo(query, count, totalPages, cachedPages)
-                    cache.saveQueryInfo(newQueryInfo)
+                    val newQueryInfoEntity = QueryInfoEntity(query, count, totalPages, cachedPages)
+                    cache.saveQueryInfo(newQueryInfoEntity)
                 }
                 data.gifs?.let { gifs ->
                     val entities = gifs

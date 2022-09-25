@@ -5,7 +5,7 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 
 @Entity(tableName = "blacklist")
-data class BlackListEntry(
+data class BlackListEntity(
     @PrimaryKey
     @ColumnInfo(name = "id")
     val id: String
