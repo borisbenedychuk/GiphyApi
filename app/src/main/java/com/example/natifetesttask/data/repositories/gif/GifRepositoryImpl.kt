@@ -62,6 +62,7 @@ class GifRepositoryImpl @Inject constructor(
             query = query,
             cachedPages = 3,
             pageResolver = { index -> ((index + 1) / PAGE).coerceIn(0, 2) },
+            queryInfoTime = System.currentTimeMillis()
         )
     }
 
@@ -89,6 +90,7 @@ class GifRepositoryImpl @Inject constructor(
                 query = query,
                 cachedPages = currentQueryInfoEntity.cachedPages + limit / PAGE,
                 pageResolver = { currentQueryInfoEntity.cachedPages + it / PAGE },
+                queryInfoTime = currentQueryInfoEntity.lastQueryTime,
             )
         } else {
             Result.Success()
@@ -100,6 +102,7 @@ class GifRepositoryImpl @Inject constructor(
         query: String,
         cachedPages: Int,
         pageResolver: (index: Int) -> Int,
+        queryInfoTime: Long,
     ): Result<Unit> = when (result) {
         is Result.Success -> {
             result.data?.let { data ->
@@ -111,7 +114,7 @@ class GifRepositoryImpl @Inject constructor(
                         totalSize = count,
                         totalPages = totalPages,
                         cachedPages = cachedPages,
-                        lastQueryTime = System.currentTimeMillis(),
+                        lastQueryTime = queryInfoTime,
                     )
                     cache.saveQueryInfo(newQueryInfoEntity)
                 }
