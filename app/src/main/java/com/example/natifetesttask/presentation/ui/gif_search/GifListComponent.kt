@@ -2,23 +2,22 @@ package com.example.natifetesttask.presentation.ui.gif_search
 
 import androidx.lifecycle.ViewModel
 import coil.ImageLoader
-import com.example.natifetesttask.application.BasicProvider
-import com.example.natifetesttask.application.ViewModelFactory
+import com.example.natifetesttask.app.di.providers.CommonProvider
+import com.example.natifetesttask.app.di.providers.GifRepositoryProvider
+import com.example.natifetesttask.presentation.utils.ViewModelFactory
+import com.example.natifetesttask.presentation.utils.ViewModelKey
 import dagger.Binds
 import dagger.Component
-import dagger.MapKey
 import dagger.Module
 import dagger.multibindings.IntoMap
-import kotlin.reflect.KClass
 
 @Component(
-    dependencies = [GifRepositoryProvider::class, BasicProvider::class],
+    dependencies = [GifRepositoryProvider::class, CommonProvider::class],
     modules = [GifListModule::class],
 )
 interface GifListComponent {
     val viewModelFactory: ViewModelFactory
-    val gifImageLoader: ImageLoader
-    val previewImageLoader: ImageLoader
+    val imageLoader: ImageLoader
 }
 
 @Module
@@ -30,5 +29,3 @@ abstract class GifListModule {
     abstract fun bindViewModel(viewModel: GifListViewModel): ViewModel
 }
 
-@MapKey
-annotation class ViewModelKey(val clazz: KClass<out ViewModel>)

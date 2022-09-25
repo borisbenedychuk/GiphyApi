@@ -17,6 +17,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.ImageLoader
@@ -24,49 +25,47 @@ import coil.annotation.ExperimentalCoilApi
 import coil.compose.AsyncImage
 import coil.compose.rememberAsyncImagePainter
 import coil.memory.MemoryCache
-import com.example.natifetesttask.application.appComponent
+import com.example.natifetesttask.app.appComponent
+import com.example.natifetesttask.presentation.models.BoundSignal
 import com.example.natifetesttask.presentation.models.GifItem
-import com.example.natifetesttask.presentation.screens.list.DaggerGifListComponent
-import com.example.natifetesttask.presentation.ui_utils.compose.rememberState
+import com.example.natifetesttask.presentation.models.TransitionInfo
+import com.example.natifetesttask.presentation.utils.compose.rememberState
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 @Composable
-fun GifListScreen() {
+fun GifSearchScreen() {
     val component = getGifListComponent()
     val viewModel = viewModel<GifListViewModel>(factory = component.viewModelFactory)
-    GifList(
-        gifImageLoader = component.gifImageLoader,
+    GifSearchUI(
+        gifImageLoader = component.imageLoader,
         items = viewModel.gifSearchState.items,
         query = viewModel.gifSearchState.query,
-        onNewQuery = viewModel::queryGifs,
-        onBoundReached = viewModel::boundReached,
-        onDeleteItem = viewModel::deleteItemById,
+        onNewAction = viewModel::handleAction,
     )
 }
 
-enum class BoundSignal {
-    TOP_REACHED,
-    BOTTOM_REACHED,
-    NONE;
-
-    val isBoundReached: Boolean get() = this == TOP_REACHED || this == BOTTOM_REACHED
+sealed interface GifSearchAction {
+    class NewQuery(val query: String) : GifSearchAction
+    class BoundsReached(val signal: BoundSignal) : GifSearchAction
+    class DeleteItem(val id: String) : GifSearchAction
 }
 
 @Composable
-private fun GifList(
+private fun GifSearchUI(
     gifImageLoader: ImageLoader,
     items: List<GifItem>,
     query: String,
-    onNewQuery: (String) -> Unit,
-    onBoundReached: (BoundSignal) -> Unit,
-    onDeleteItem: (String) -> Unit,
+    onNewAction: (GifSearchAction) -> Unit,
 ) {
-    Column(modifier = Modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally) {
+    Column(
+        modifier = Modifier.fillMaxSize(),
+        horizontalAlignment = Alignment.CenterHorizontally,
+    ) {
         TextField(
             value = query,
-            onValueChange = onNewQuery,
+            onValueChange = { onNewAction(GifSearchAction.NewQuery(it)) },
         )
         val scope = rememberCoroutineScope()
         var isDetailScreen by rememberState(false)
@@ -74,32 +73,29 @@ private fun GifList(
         if (isDetailScreen) {
             GifSearchPager(
                 items = items,
-                gifLoader = gifImageLoader,
+                imageLoader = gifImageLoader,
                 onDeleteItem = { id ->
-                    onDeleteItem(id)
+                    onNewAction(GifSearchAction.DeleteItem(id))
                     val item = items.find { it.id == id } ?: return@GifSearchPager
                     scope.launch { gifImageLoader.deleteGifCoilCache(item) }
                 },
-                onBoundReached = onBoundReached,
+                onBoundReached = { onNewAction(GifSearchAction.BoundsReached(it)) },
                 currentItemIndex = currentItemIndex ?: 0,
                 onPageScrolled = { currentItemIndex = it },
-                onBackPressed = { isDetailScreen = false }
+                onBackPressed = { isDetailScreen = false },
             )
         } else {
             GifSearchGrid(
                 items = items,
                 initialPage = currentItemIndex ?: 0,
-                gifLoader = gifImageLoader,
+                imageLoader = gifImageLoader,
                 onDeleteItem = { id ->
-                    onDeleteItem(id)
+                    onNewAction(GifSearchAction.DeleteItem(id))
                     val item = items.find { it.id == id } ?: return@GifSearchGrid
                     scope.launch { gifImageLoader.deleteGifCoilCache(item) }
                 },
-                onBoundReached = onBoundReached,
-                onItemClick = {
-                    currentItemIndex = it
-                    isDetailScreen = true
-                }
+                onBoundReached = { onNewAction(GifSearchAction.BoundsReached(it)) },
+                onItemClick = { isDetailScreen = true },
             )
         }
     }
@@ -111,10 +107,10 @@ private fun GifSearchGrid(
     initialPage: Int = 0,
     lazyListState: LazyGridState = rememberLazyGridState(initialPage),
     items: List<GifItem>,
-    gifLoader: ImageLoader,
+    imageLoader: ImageLoader,
     onDeleteItem: (String) -> Unit,
     onBoundReached: (BoundSignal) -> Unit,
-    onItemClick: (Int) -> Unit,
+    onItemClick: (TransitionInfo) -> Unit,
 ) {
     val boundSignal by remember {
         derivedStateOf {
@@ -138,53 +134,76 @@ private fun GifSearchGrid(
             .background(Color.Cyan),
         columns = GridCells.Adaptive(150.dp)
     ) {
-        items(
+        itemsIndexed(
             items = items,
-            contentType = { it.originalUrl },
-            key = { it.originalUrl },
-        ) { item ->
-            var isLoading by rememberState(false)
-            Box {
-                AsyncImage(
-                    model = item.smallUrl,
-                    imageLoader = gifLoader,
-                    onLoading = { isLoading = true },
-                    onError = { isLoading = false },
-                    onSuccess = { isLoading = false },
-                    placeholder = rememberAsyncImagePainter(
-                        model = item.previewUrl,
-                        imageLoader = gifLoader,
-                    ),
-                    contentScale = ContentScale.Crop,
-                    modifier = Modifier
-                        .aspectRatio(1f)
-                        .clickable { onItemClick(items.indexOf(item)) },
-                    contentDescription = null,
-                )
-                if (isLoading) {
-                    CircularProgressIndicator(
-                        modifier = Modifier
-                            .background(Color(0x4D000000), RoundedCornerShape(3.dp))
-                            .padding(10.dp)
-                            .fillMaxSize(0.1f)
-                            .aspectRatio(1f)
-                            .align(Alignment.Center),
-                        strokeWidth = 3.dp,
-                        color = Color.White,
-                    )
-                } else {
-                    IconButton(
-                        onClick = { onDeleteItem(item.id) },
-                        modifier = Modifier
-                            .fillMaxSize(0.2f)
-                            .align(Alignment.TopEnd),
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.Delete,
-                            contentDescription = "delete gif",
+            contentType = { i, item -> item.id },
+            key = { i, item -> item.originalUrl },
+        ) { i, item ->
+            GifSearchGridItem(
+                item = item,
+                imageLoader = imageLoader,
+                onItemClick = {
+                    onItemClick(
+                        TransitionInfo(
+                            itemIndex = i,
+                            itemOffset = lazyListState.layoutInfo.visibleItemsInfo.find { it.index == i }?.offset
+                                ?: IntOffset.Zero,
                         )
-                    }
-                }
+                    )
+                },
+                onDeleteItem = onDeleteItem,
+            )
+        }
+    }
+}
+
+@Composable
+private fun GifSearchGridItem(
+    item: GifItem,
+    imageLoader: ImageLoader,
+    onItemClick: () -> Unit,
+    onDeleteItem: (String) -> Unit,
+) {
+    var isLoading by rememberState(false)
+    Box {
+        AsyncImage(
+            model = item.smallUrl,
+            imageLoader = imageLoader,
+            onLoading = { isLoading = true },
+            onError = { isLoading = false },
+            onSuccess = { isLoading = false },
+            placeholder = rememberAsyncImagePainter(
+                model = item.previewUrl,
+                imageLoader = imageLoader,
+            ),
+            contentScale = ContentScale.Crop,
+            modifier = Modifier
+                .aspectRatio(1f)
+                .clickable(onClick = onItemClick),
+            contentDescription = null,
+        )
+        if (isLoading) {
+            CircularProgressIndicator(
+                modifier = Modifier
+                    .background(Color(0x4D000000), RoundedCornerShape(3.dp))
+                    .padding(10.dp)
+                    .fillMaxSize(0.1f)
+                    .aspectRatio(1f)
+                    .align(Alignment.Center),
+                strokeWidth = 3.dp,
+                color = Color.White,
+            )
+        } else {
+            IconButton(
+                onClick = { onDeleteItem(item.id) },
+                modifier = Modifier
+                    .fillMaxSize(0.2f)
+                    .align(Alignment.TopEnd),
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Delete,
+                    contentDescription = "delete gif",
+                )
             }
         }
     }
@@ -196,8 +215,8 @@ private fun getGifListComponent(): GifListComponent {
     val appComponent = context.appComponent
     return remember {
         DaggerGifListComponent.builder()
-            .gifRepositoryProvider(appComponent.provider)
-            .basicProvider(appComponent.basicProvider)
+            .gifRepositoryProvider(appComponent.gifRepository)
+            .commonProvider(appComponent)
             .build()
     }
 }

@@ -1,4 +1,4 @@
-package com.example.natifetesttask.presentation.ui_utils.compose
+package com.example.natifetesttask.presentation.utils.compose
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf

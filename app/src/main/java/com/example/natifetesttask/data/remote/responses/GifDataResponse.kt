@@ -32,7 +32,7 @@ class GifDataResponse(
         data class Images(
             @SerialName("original")
             val original: UrlHolder? = null,
-            @SerialName("fixed_height")
+            @SerialName("preview_gif")
             val small: UrlHolder? = null,
             @SerialName("fixed_height_small_still")
             val preview: UrlHolder? = null,

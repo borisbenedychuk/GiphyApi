@@ -7,6 +7,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.natifetesttask.domain.repository.GifRepository
 import com.example.natifetesttask.domain.utils.Result
+import com.example.natifetesttask.presentation.models.BoundSignal
 import com.example.natifetesttask.presentation.models.GifSearchState
 import com.example.natifetesttask.presentation.models.asItem
 import kotlinx.coroutines.Job
@@ -26,7 +27,15 @@ class GifListViewModel @Inject constructor(
     private var currentJob: Job? = null
     private var page = 0
 
-    fun queryGifs(query: String) {
+    fun handleAction(action: GifSearchAction) {
+        when (action) {
+            is GifSearchAction.NewQuery -> queryGifs(action.query)
+            is GifSearchAction.BoundsReached -> boundReached(action.signal)
+            is GifSearchAction.DeleteItem -> deleteItemById(action.id)
+        }
+    }
+
+    private fun queryGifs(query: String) {
         currentJob?.cancel()
         offset = 0
         page = 0
@@ -34,9 +43,10 @@ class GifListViewModel @Inject constructor(
         observePages(query)
     }
 
-    fun deleteItemById(id: String) = viewModelScope.launch { repository.addGifToBlackList(id) }
+    private fun deleteItemById(id: String) =
+        viewModelScope.launch { repository.addGifToBlackList(id) }
 
-    fun boundReached(signal: BoundSignal) {
+    private fun boundReached(signal: BoundSignal) {
         val query = gifSearchState.query
         if (signal == BoundSignal.BOTTOM_REACHED) {
             page++

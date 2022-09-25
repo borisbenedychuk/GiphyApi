@@ -17,8 +17,9 @@ import androidx.compose.ui.unit.dp
 import coil.ImageLoader
 import coil.compose.AsyncImage
 import coil.compose.rememberAsyncImagePainter
+import com.example.natifetesttask.presentation.models.BoundSignal
 import com.example.natifetesttask.presentation.models.GifItem
-import com.example.natifetesttask.presentation.ui_utils.compose.rememberState
+import com.example.natifetesttask.presentation.utils.compose.rememberState
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.rememberPagerState
@@ -28,7 +29,7 @@ import com.google.accompanist.pager.rememberPagerState
 fun GifSearchPager(
     modifier: Modifier = Modifier,
     items: List<GifItem>,
-    gifLoader: ImageLoader,
+    imageLoader: ImageLoader,
     onDeleteItem: (String) -> Unit,
     onBoundReached: (BoundSignal) -> Unit,
     currentItemIndex: Int,
@@ -48,13 +49,6 @@ fun GifSearchPager(
             }
         }
     }
-    BackHandler(onBack = onBackPressed)
-    LaunchedEffect(pagerState.currentPage) {
-        onPageScrolled(pagerState.currentPage)
-    }
-    LaunchedEffect(boundSignal) {
-        if (boundSignal.isBoundReached) onBoundReached(boundSignal)
-    }
     HorizontalPager(
         count = items.size,
         state = pagerState,
@@ -62,48 +56,67 @@ fun GifSearchPager(
             .fillMaxWidth()
             .background(Color.Cyan),
     ) { count ->
-        var isLoading by rememberState(false)
-        val item = items[count]
-        Column(
+        GifPagerItem(
+            item = items[count],
+            imageLoader = imageLoader,
+            onDeleteItem = onDeleteItem,
+        )
+    }
+    BackHandler(onBack = onBackPressed)
+    LaunchedEffect(pagerState.currentPage) {
+        onPageScrolled(pagerState.currentPage)
+    }
+    LaunchedEffect(boundSignal) {
+        if (boundSignal.isBoundReached) onBoundReached(boundSignal)
+    }
+}
+
+@Composable
+private fun GifPagerItem(
+    item: GifItem,
+    imageLoader: ImageLoader,
+    onDeleteItem: (String) -> Unit
+) {
+    var isLoading by rememberState(false)
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Color.Black),
+        horizontalAlignment = Alignment.CenterHorizontally,
+    ) {
+        Spacer(modifier = Modifier.fillMaxHeight(0.1f))
+        AsyncImage(
+            model = item.originalUrl,
+            imageLoader = imageLoader,
+            onLoading = { isLoading = true },
+            onError = { isLoading = false },
+            onSuccess = { isLoading = false },
+            placeholder = rememberAsyncImagePainter(
+                model = item.smallUrl,
+                imageLoader = imageLoader,
+            ),
             modifier = Modifier
-                .fillMaxSize()
-                .background(Color.Black),
-            horizontalAlignment = Alignment.CenterHorizontally,
+                .fillMaxWidth()
+                .height(400.dp),
+            contentDescription = null
+        )
+        Text(
+            text = item.title,
+            style = MaterialTheme.typography.body1,
+            color = Color.White,
+            modifier = Modifier.padding(top = 30.dp)
+        )
+        IconButton(
+            onClick = { onDeleteItem(item.id) },
+            modifier = Modifier
+                .padding(top = 30.dp)
+                .size(50.dp)
         ) {
-            Spacer(modifier = Modifier.fillMaxHeight(0.1f))
-            AsyncImage(
-                model = item.originalUrl,
-                imageLoader = gifLoader,
-                onLoading = { isLoading = true },
-                onError = { isLoading = false },
-                onSuccess = { isLoading = false },
-                placeholder = rememberAsyncImagePainter(
-                    model = item.smallUrl,
-                    imageLoader = gifLoader,
-                ),
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(400.dp),
-                contentDescription = null
+            Icon(
+                imageVector = Icons.Default.Delete,
+                contentDescription = "delete gif",
+                tint = MaterialTheme.colors.onError,
             )
-            Text(
-                text = item.title,
-                style = MaterialTheme.typography.body1,
-                color = Color.White,
-                modifier = Modifier.padding(top = 30.dp)
-            )
-            IconButton(
-                onClick = { onDeleteItem(item.id) },
-                modifier = Modifier
-                    .padding(top = 30.dp)
-                    .size(50.dp)
-            ) {
-                Icon(
-                    imageVector = Icons.Default.Delete,
-                    contentDescription = "delete gif",
-                    tint = MaterialTheme.colors.onError,
-                )
-            }
         }
     }
 }

@@ -1,7 +1,9 @@
-package com.example.natifetesttask.application
+package com.example.natifetesttask.app
 
 import android.app.Application
 import android.content.Context
+import com.example.natifetesttask.app.di.AppComponent
+import com.example.natifetesttask.app.di.DaggerAppComponent
 
 class App : Application() {
     val component: AppComponent by lazy { DaggerAppComponent.factory().create(this) }

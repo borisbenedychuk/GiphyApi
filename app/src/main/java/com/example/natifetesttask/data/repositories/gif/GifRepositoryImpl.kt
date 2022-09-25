@@ -1,4 +1,4 @@
-package com.example.natifetesttask.data.repositories
+package com.example.natifetesttask.data.repositories.gif
 
 import com.example.natifetesttask.data.datasources.gif.CacheGifDatasource
 import com.example.natifetesttask.data.datasources.gif.RemoteGifDatasource

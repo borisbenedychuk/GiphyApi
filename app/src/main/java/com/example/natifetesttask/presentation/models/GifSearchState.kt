@@ -1,5 +1,7 @@
 package com.example.natifetesttask.presentation.models
 
+import androidx.compose.ui.unit.IntOffset
+
 data class GifSearchState(
     val isFinished: Boolean = false,
     val items: List<GifItem> = emptyList(),
@@ -11,7 +13,7 @@ data class GifSearchState(
 )
 
 data class TransitionInfo(
-    val itemOffset: Int = 0,
     val itemIndex: Int = 0,
+    val itemOffset: IntOffset = IntOffset.Zero,
 )
 
