@@ -18,6 +18,8 @@ interface CacheGifDatasource {
 
     suspend fun getGifs(query: String, pages: List<Int>): Flow<List<GifEntity>>
 
+    suspend fun getFirstGif(query: String): GifEntity?
+
     suspend fun saveGifs(entities: List<GifEntity>)
 
     suspend fun getQueryInfoEntity(query: String): QueryInfoEntity?
@@ -31,5 +33,6 @@ interface CacheGifDatasource {
     suspend fun addGifToBlacklist(id: String)
 
     suspend fun getBlacklistIds(): List<String>
+
 }
 

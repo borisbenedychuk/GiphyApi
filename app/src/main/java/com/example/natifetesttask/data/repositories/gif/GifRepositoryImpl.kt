@@ -13,7 +13,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
-private const val FIVE_HOURS = 1000 * 60 * 60 * 5
+private const val FIVE_HOURS = 1000 * 60 * 1
 
 class GifRepositoryImpl @Inject constructor(
     private val remote: RemoteGifDatasource,
@@ -34,7 +34,11 @@ class GifRepositoryImpl @Inject constructor(
         with(Dispatchers.Default) {
             val queryInfo = cache.getQueryInfoEntity(query)
             val result =
-                queryInfo?.let { regularLoad(query, currentPage, it) } ?: initialLoad(query)
+                when {
+                    queryInfo == null -> initialLoad(query)
+                    currentPage == 0 -> refreshLoad(query, currentPage, queryInfo)
+                    else -> regularLoad(query, currentPage, queryInfo)
+                }
             when (result) {
                 is Result.Error -> result
                 is Result.Success -> {
@@ -49,9 +53,38 @@ class GifRepositoryImpl @Inject constructor(
             }
         }
 
+    private suspend fun refreshLoad(
+        query: String,
+        currentPage: Int,
+        currentQueryInfoEntity: QueryInfoEntity,
+    ): Result<Unit> {
+        val result = remote.getGifs(
+            query = query,
+            limit = 1,
+            offset = 0,
+        )
+        if (result is Result.Success) {
+            val remoteResult = result.data?.gifs?.firstOrNull()
+            val cacheResult = cache.getFirstGif(query)
+            return when {
+                remoteResult == null || cacheResult == null ->
+                    regularLoad(query, currentPage, currentQueryInfoEntity)
+                remoteResult.id == cacheResult.id -> {
+                    regularLoad(query, currentPage, currentQueryInfoEntity)
+                }
+                else -> {
+                    cache.clearQueryData(listOf(query))
+                    initialLoad(query)
+                }
+            }
+        } else {
+            return regularLoad(query, currentPage, currentQueryInfoEntity)
+        }
+    }
+
     private suspend fun initialLoad(
         query: String,
-    ): Result<*> {
+    ): Result<Unit> {
         val result = remote.getGifs(
             query = query,
             limit = PAGE * 3,
@@ -69,17 +102,17 @@ class GifRepositoryImpl @Inject constructor(
     private suspend fun regularLoad(
         query: String,
         currentPage: Int,
-        currentQueryInfoEntity: QueryInfoEntity,
+        currentQueryInfo: QueryInfoEntity,
     ): Result<Unit> {
         val upperBound = currentPage + 2
-        val allPagesInCache = upperBound <= currentQueryInfoEntity.cachedPages - 1
-        val pageInBounds = currentPage <= currentQueryInfoEntity.totalPages - 1
+        val allPagesInCache = upperBound <= currentQueryInfo.cachedPages - 1
+        val pageInBounds = currentPage <= currentQueryInfo.totalPages - 1
         return if (!allPagesInCache && pageInBounds) {
             val limit =
-                (upperBound - currentQueryInfoEntity.cachedPages + 1).coerceAtMost(
-                    currentQueryInfoEntity.totalPages - 1
+                (upperBound - currentQueryInfo.cachedPages + 1).coerceAtMost(
+                    currentQueryInfo.totalPages - 1
                 ) * PAGE
-            val offset = currentQueryInfoEntity.cachedPages * PAGE
+            val offset = currentQueryInfo.cachedPages * PAGE
             val result = remote.getGifs(
                 query = query,
                 limit = limit,
@@ -88,9 +121,9 @@ class GifRepositoryImpl @Inject constructor(
             handleResponse(
                 result = result,
                 query = query,
-                cachedPages = currentQueryInfoEntity.cachedPages + limit / PAGE,
-                pageResolver = { currentQueryInfoEntity.cachedPages + it / PAGE },
-                queryInfoTime = currentQueryInfoEntity.lastQueryTime,
+                cachedPages = currentQueryInfo.cachedPages + limit / PAGE,
+                pageResolver = { currentQueryInfo.cachedPages + it / PAGE },
+                queryInfoTime = currentQueryInfo.lastQueryTime,
             )
         } else {
             Result.Success()

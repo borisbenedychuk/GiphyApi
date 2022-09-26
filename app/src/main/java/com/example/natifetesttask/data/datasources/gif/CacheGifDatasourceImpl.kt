@@ -17,6 +17,9 @@ class CacheGifDatasourceImpl @Inject constructor(
     override suspend fun getGifs(query: String, pages: List<Int>): Flow<List<GifEntity>> =
         gifDao.getGifs(query, pages)
 
+    override suspend fun getFirstGif(query: String): GifEntity? =
+        gifDao.getFirstGif(query)
+
     override suspend fun saveGifs(entities: List<GifEntity>) =
         gifDao.saveGifs(entities)
 

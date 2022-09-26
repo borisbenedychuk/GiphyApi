@@ -15,6 +15,9 @@ interface GifDao {
     @Query("SELECT * FROM gif WHERE `query` = :query AND page IN (:pages)")
     fun getGifs(query: String, pages: List<Int>): Flow<List<GifEntity>>
 
+    @Query("SELECT * FROM gif WHERE `query` = :query")
+    suspend fun getFirstGif(query: String): GifEntity?
+
     @Query("SELECT * FROM queryInfo WHERE `query` = :query")
     suspend fun getQueryInfoEntity(query: String): QueryInfoEntity?
 

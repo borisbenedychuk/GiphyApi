@@ -11,7 +11,7 @@ import dagger.Component
 @Component(
     modules = [
         GifComponentsModule::class,
-        CommonModule::class
+        CommonModule::class,
     ]
 )
 interface AppComponent : CommonRepositoryDependencies, GifSearchDependencies {
@@ -21,8 +21,7 @@ interface AppComponent : CommonRepositoryDependencies, GifSearchDependencies {
     @Component.Factory
     interface Factory {
         fun create(
-            @BindsInstance
-            context: Context,
+            @BindsInstance context: Context,
         ): AppComponent
     }
 }
