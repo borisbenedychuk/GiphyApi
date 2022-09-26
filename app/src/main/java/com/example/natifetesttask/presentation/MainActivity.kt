@@ -1,7 +1,6 @@
 package com.example.natifetesttask.presentation
 
 import android.os.Bundle
-import android.view.WindowManager
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import com.example.natifetesttask.presentation.theme.ui.NatifeTestTaskTheme

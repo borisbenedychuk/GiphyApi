@@ -4,7 +4,6 @@ import com.example.natifetesttask.data.remote.responses.GifDataResponse
 import retrofit2.Response
 import retrofit2.http.GET
 import retrofit2.http.Query
-import retrofit2.http.QueryMap
 
 private const val API_KEY = "api_key"
 private const val QUERY = "q"
