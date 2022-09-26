@@ -2,6 +2,7 @@ package com.example.natifetesttask.data.repositories.gif
 
 import com.example.natifetesttask.data.datasources.gif.CacheGifDatasource
 import com.example.natifetesttask.data.datasources.gif.RemoteGifDatasource
+import com.example.natifetesttask.data.datasources.gif_info.CacheGifInfoDatasource
 import com.example.natifetesttask.data.db.entities.QueryInfoEntity
 import com.example.natifetesttask.data.remote.responses.GifDataResponse
 import com.example.natifetesttask.domain.model.gif.GifModel
@@ -16,11 +17,12 @@ private const val FIVE_HOURS = 1000 * 60 * 60 * 5
 
 class GifRepositoryImpl @Inject constructor(
     private val remote: RemoteGifDatasource,
-    private val cache: CacheGifDatasource,
+    private val gifCache: CacheGifDatasource,
+    private val gifInfoCache: CacheGifInfoDatasource,
 ) : GifRepository {
 
     override suspend fun getPages(query: String, pages: List<Int>): Flow<List<GifModel>> {
-        return cache.getGifs(query, pages).map { list -> list.map { it.asGifModel() } }
+        return gifCache.getGifs(query, pages).map { list -> list.map { it.asGifModel() } }
     }
 
     override suspend fun isGifCacheFresh(query: String): Boolean {
@@ -31,7 +33,7 @@ class GifRepositoryImpl @Inject constructor(
         )
         return if (result is Result.Success) {
             val remoteResult = result.data.gifs.firstOrNull()
-            val cacheResult = cache.getFirstGif(query)
+            val cacheResult = gifCache.getFirstGif(query)
             when {
                 remoteResult == null -> true
                 cacheResult == null -> false
@@ -45,19 +47,21 @@ class GifRepositoryImpl @Inject constructor(
 
     override suspend fun deleteOldData() {
         val currentTime = System.currentTimeMillis()
-        val queryInfoEntities = cache.getQueryInfoEntities().filter {
+        val queryInfoEntities = gifInfoCache.getQueryInfoEntities().filter {
             currentTime - it.lastQueryTime > FIVE_HOURS
         }
-        cache.clearQueryData(queryInfoEntities.map { it.query })
+        val queries = queryInfoEntities.map { it.query }.toTypedArray()
+        gifInfoCache.deleteQueryInfoEntities(*queries)
+        gifCache.deleteGifs(*queries)
     }
 
-    override suspend fun addGifToBlackList(id: String) = cache.addGifToBlacklist(id)
-
+    override suspend fun addGifToBlackList(id: String) = gifInfoCache.addGifToBlacklist(id)
 
     override suspend fun loadInitialPagesAndCheckIfHasMore(
         query: String,
     ): Result<Boolean> {
-        cache.clearQueryData(listOf(query))
+        gifInfoCache.deleteQueryInfoEntities(query)
+        gifCache.deleteGifs(query)
         val result = remote.getGifs(
             query = query,
             limit = PAGE * 2,
@@ -73,7 +77,7 @@ class GifRepositoryImpl @Inject constructor(
     }
 
     override suspend fun loadPageAndCheckIfHasMore(query: String, page: Int): Result<Boolean> {
-        val currentQueryInfo = cache.getQueryInfoEntity(query) ?: return Result.Error()
+        val currentQueryInfo = gifInfoCache.getQueryInfoEntity(query) ?: return Result.Error()
         val allPagesInCache = page * PAGE <= currentQueryInfo.cachedPages - 1
         return if (!allPagesInCache) {
             val offset = currentQueryInfo.cachedPages * PAGE
@@ -103,7 +107,7 @@ class GifRepositoryImpl @Inject constructor(
     ): Result<Boolean> =
         when (result) {
             is Result.Success -> {
-                val blackList = cache.getBlacklistIds()
+                val blackList = gifInfoCache.getBlacklistIds()
                 val count = result.data.pagination.totalCount
                 val totalPages = count / PAGE + if (count % PAGE != 0) 1 else 0
                 val cachePages = if (cachePagesCount > totalPages) totalPages else cachePagesCount
@@ -120,8 +124,8 @@ class GifRepositoryImpl @Inject constructor(
                         gif.asGifEntity(query, gifPage)
                     }
                     .filter { it.id !in blackList }
-                cache.saveGifs(entities)
-                cache.saveQueryInfo(newQueryInfoEntity)
+                gifCache.saveGifs(entities)
+                gifInfoCache.saveQueryInfo(newQueryInfoEntity)
                 Result.Success(cachePages < totalPages)
             }
             is Result.Error -> result

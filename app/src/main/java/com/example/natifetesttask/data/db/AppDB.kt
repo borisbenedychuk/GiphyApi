@@ -3,6 +3,7 @@ package com.example.natifetesttask.data.db
 import androidx.room.Database
 import androidx.room.RoomDatabase
 import com.example.natifetesttask.data.db.dao.GifDao
+import com.example.natifetesttask.data.db.dao.GifInfoDao
 import com.example.natifetesttask.data.db.entities.BlackListEntity
 import com.example.natifetesttask.data.db.entities.GifEntity
 import com.example.natifetesttask.data.db.entities.QueryInfoEntity
@@ -14,5 +15,6 @@ import com.example.natifetesttask.data.db.entities.QueryInfoEntity
 )
 abstract class AppDB : RoomDatabase() {
     abstract val gifDao: GifDao
+    abstract val gifInfoDao: GifInfoDao
 }
 

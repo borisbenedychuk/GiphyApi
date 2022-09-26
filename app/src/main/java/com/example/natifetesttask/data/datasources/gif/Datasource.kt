@@ -1,7 +1,6 @@
 package com.example.natifetesttask.data.datasources.gif
 
 import com.example.natifetesttask.data.db.entities.GifEntity
-import com.example.natifetesttask.data.db.entities.QueryInfoEntity
 import com.example.natifetesttask.data.remote.responses.GifDataResponse
 import com.example.natifetesttask.domain.utils.Result
 import kotlinx.coroutines.flow.Flow
@@ -22,17 +21,6 @@ interface CacheGifDatasource {
 
     suspend fun saveGifs(entities: List<GifEntity>)
 
-    suspend fun getQueryInfoEntity(query: String): QueryInfoEntity?
-
-    suspend fun getQueryInfoEntities(): List<QueryInfoEntity>
-
-    suspend fun clearQueryData(queries: List<String>)
-
-    suspend fun saveQueryInfo(queryInfoEntity: QueryInfoEntity)
-
-    suspend fun addGifToBlacklist(id: String)
-
-    suspend fun getBlacklistIds(): List<String>
-
+    suspend fun deleteGifs(vararg queries: String)
 }
 
