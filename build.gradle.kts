@@ -4,7 +4,3 @@ plugins {
     id("org.jetbrains.kotlin.android") version "1.7.0" apply false
     kotlin("plugin.serialization") version "1.7.0" apply false
 }
-
-task<Delete>("some") {
-    delete.add(rootProject.buildDir)
-}

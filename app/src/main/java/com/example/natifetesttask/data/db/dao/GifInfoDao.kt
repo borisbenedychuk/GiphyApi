@@ -22,7 +22,7 @@ interface GifInfoDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun saveQueryInfo(info: QueryInfoEntity)
 
-    @Insert
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun addIdToBlacklist(entity: BlackListEntity)
 
     @Query("SELECT id FROM blacklist")

@@ -8,12 +8,12 @@ import com.example.natifetesttask.data.remote.responses.GifDataResponse
 import com.example.natifetesttask.domain.model.gif.GifModel
 import com.example.natifetesttask.domain.repository.gif.GifRepository
 import com.example.natifetesttask.domain.utils.Result
-import com.example.natifetesttask.presentation.ui.gif.PAGE
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
-private const val FIVE_HOURS = 1000 * 60 * 60 * 5
+private const val FIVE_HOURS = 1000 * 30 * 1
+private const val PAGE = 25
 
 class GifRepositoryImpl @Inject constructor(
     private val remote: RemoteGifDatasource,
@@ -55,7 +55,10 @@ class GifRepositoryImpl @Inject constructor(
         gifCache.deleteGifs(*queries)
     }
 
-    override suspend fun addGifToBlackList(id: String) = gifInfoCache.addGifToBlacklist(id)
+    override suspend fun addGifToBlackList(id: String) {
+        gifCache.deleteGifById(id)
+        gifInfoCache.addGifToBlacklist(id)
+    }
 
     override suspend fun loadInitialPagesAndCheckIfHasMore(
         query: String,

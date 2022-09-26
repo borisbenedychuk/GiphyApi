@@ -1,5 +1,6 @@
 package com.example.natifetesttask.presentation.theme.ui
 
+import android.annotation.SuppressLint
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.darkColors
@@ -9,11 +10,13 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.graphics.Color
 import com.example.natifetesttask.presentation.utils.compose.isInLandScape
 
+@SuppressLint("ConflictingOnColor")
 private val LightColorPalette = darkColors(
     primary = Color(0xFF000000),
     primaryVariant = Color(0xFF292828),
     background = Color(0xFFFFFFFF),
     surface = Color(0xFFFFFFFF),
+    onSurface = Color(0xFF4D4D4D),
 )
 
 private val DarkColorPalette = lightColors(
@@ -21,6 +24,7 @@ private val DarkColorPalette = lightColors(
     primaryVariant = Color(0xFF9B9B9B),
     background = Color(0xFF383838),
     surface = Color(0xFF242323),
+    onSurface = Color(0xFF242323)
 )
 
 

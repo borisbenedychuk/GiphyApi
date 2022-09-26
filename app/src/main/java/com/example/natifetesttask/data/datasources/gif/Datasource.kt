@@ -22,5 +22,7 @@ interface CacheGifDatasource {
     suspend fun saveGifs(entities: List<GifEntity>)
 
     suspend fun deleteGifs(vararg queries: String)
+
+    suspend fun deleteGifById(id: String)
 }
 

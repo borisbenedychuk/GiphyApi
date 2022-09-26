@@ -7,11 +7,11 @@ import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.OutlinedTextField
 import androidx.compose.material.Text
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.focus.FocusRequester
-import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -29,7 +29,6 @@ import com.example.natifetesttask.presentation.models.gif.GifSearchState
 import com.example.natifetesttask.presentation.ui.gif.list.GifSearchList
 import com.example.natifetesttask.presentation.ui.gif.pager.GifSearchPager
 import com.example.natifetesttask.presentation.utils.compose.fillMaxSmallestWidth
-import com.example.natifetesttask.presentation.utils.compose.rememberState
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -54,7 +53,6 @@ private fun GifSearchUI(
 ) {
     val scope = rememberCoroutineScope()
     val initialIndex = state.currentIndex
-    var initialFocus by rememberState(true)
     AnimatedContent(
         transitionSpec = {
             if (targetState) {
@@ -80,7 +78,6 @@ private fun GifSearchUI(
                 onBackPressed = { onNewAction(NavigateToGrid) },
             )
         } else {
-            val focusRequester = remember { FocusRequester() }
             Column(
                 modifier = Modifier.fillMaxSize(),
                 horizontalAlignment = Alignment.CenterHorizontally,
@@ -88,7 +85,6 @@ private fun GifSearchUI(
                 OutlinedTextField(
                     modifier = Modifier
                         .padding(20.dp)
-                        .focusRequester(focusRequester)
                         .fillMaxSmallestWidth(0.75f),
                     value = state.query,
                     onValueChange = { text ->
@@ -137,12 +133,6 @@ private fun GifSearchUI(
                         color = MaterialTheme.colors.primary,
                         strokeWidth = 8.dp
                     )
-                }
-            }
-            LaunchedEffect(Unit) {
-                if (initialFocus) {
-                    focusRequester.requestFocus()
-                    initialFocus = false
                 }
             }
         }

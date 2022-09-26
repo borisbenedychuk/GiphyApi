@@ -1,4 +1,4 @@
-package com.example.natifetesttask.app.di
+package com.example.natifetesttask.app.di.common
 
 import android.content.Context
 import android.os.Build
@@ -8,6 +8,8 @@ import coil.decode.GifDecoder
 import coil.decode.ImageDecoderDecoder
 import coil.disk.DiskCache
 import coil.memory.MemoryCache
+import com.example.natifetesttask.app.di.AppComponent
+import com.example.natifetesttask.app.di.Scoped
 import com.example.natifetesttask.data.db.AppDB
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
 import dagger.Module

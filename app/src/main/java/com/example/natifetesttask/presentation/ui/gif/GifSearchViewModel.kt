@@ -15,8 +15,6 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-const val PAGE = 25
-
 class GifSearchViewModel @Inject constructor(
     private val getPagesUseCase: GetPagesUseCase,
     private val addToBlacklistUseCase: AddToBlacklistUseCase,
@@ -66,7 +64,7 @@ class GifSearchViewModel @Inject constructor(
                 gifSearchState = gifSearchState.copy(query = query, loading = false)
             }
             query != gifSearchState.query -> {
-                gifSearchState = gifSearchState.copy(query = query, loading = true)
+                gifSearchState = gifSearchState.copy(query = query)
                 observePages(query, 0)
             }
         }
@@ -104,7 +102,10 @@ class GifSearchViewModel @Inject constructor(
         currentJob?.cancel()
         currentJob = viewModelScope.launch {
             delay(300)
-            when (val result = getPagesUseCase(query, requestPage)) {
+            gifSearchState = gifSearchState.copy(loading = true)
+            val result = getPagesUseCase(query, requestPage)
+            gifSearchState = gifSearchState.copy(loading = false)
+            when (result) {
                 is Result.Success -> {
                     currentPage = if (requestPage == 0) 1 else requestPage
                     result.data.collect { pagesModel ->
@@ -117,9 +118,7 @@ class GifSearchViewModel @Inject constructor(
                     }
                 }
                 is Result.Error -> {
-                    gifSearchState = gifSearchState.copy(
-                        errorMsg = result.msg.orEmpty()
-                    )
+                    gifSearchState = gifSearchState.copy(errorMsg = result.msg.orEmpty())
                 }
             }
         }

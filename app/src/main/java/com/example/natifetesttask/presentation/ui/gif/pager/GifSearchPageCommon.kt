@@ -123,15 +123,6 @@ fun GifPagerItemInfo(
         overflow = TextOverflow.Ellipsis,
     )
     when (loadingState) {
-        ImageState.LOADING -> {
-            CircularProgressIndicator(
-                modifier = Modifier
-                    .padding(top = 30.dp)
-                    .size(40.dp),
-                strokeWidth = 6.dp,
-                color = MaterialTheme.colors.primary,
-            )
-        }
         ImageState.ERROR -> {
             RetryIcon(
                 modifier = Modifier
@@ -139,7 +130,7 @@ fun GifPagerItemInfo(
                 onRetryClick = onRetry,
             )
         }
-        ImageState.SUCCESS -> {
+        else -> {
             DeleteIcon(
                 item = currentItem,
                 onDeleteItem = onDeleteItem,
@@ -148,5 +139,14 @@ fun GifPagerItemInfo(
                     .padding(top = 30.dp)
             )
         }
+    }
+    if (loadingState == ImageState.LOADING) {
+        CircularProgressIndicator(
+            modifier = Modifier
+                .padding(top = 30.dp)
+                .size(40.dp),
+            strokeWidth = 6.dp,
+            color = MaterialTheme.colors.primary,
+        )
     }
 }

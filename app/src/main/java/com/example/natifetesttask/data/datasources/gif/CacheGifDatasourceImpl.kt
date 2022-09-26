@@ -20,4 +20,7 @@ class CacheGifDatasourceImpl @Inject constructor(
 
     override suspend fun deleteGifs(vararg queries: String) =
         gifDao.deleteQueryGifs(*queries)
+
+    override suspend fun deleteGifById(id: String) =
+        gifDao.deleteGif(id)
 }

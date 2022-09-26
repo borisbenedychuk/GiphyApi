@@ -1,4 +1,4 @@
-package com.example.natifetesttask.app.di.providers
+package com.example.natifetesttask.app.di.common
 
 import com.example.natifetesttask.data.db.AppDB
 import retrofit2.Retrofit
