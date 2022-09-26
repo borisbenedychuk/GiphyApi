@@ -14,8 +14,7 @@ class App : Application() {
     override fun onCreate() {
         super.onCreate()
         MainScope().launch {
-            val deleteOldData = component.deleteOldDataCacheUseCase
-            deleteOldData()
+            component.deleteOldDataCacheUseCase()
         }
     }
 }

@@ -1,15 +1,19 @@
 package com.example.natifetesttask.presentation.ui.gif
 
+import android.util.Log
 import androidx.compose.animation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.OutlinedTextField
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -24,6 +28,9 @@ import com.example.natifetesttask.presentation.models.gif.GifItem
 import com.example.natifetesttask.presentation.models.gif.GifSearchAction
 import com.example.natifetesttask.presentation.models.gif.GifSearchAction.*
 import com.example.natifetesttask.presentation.models.gif.GifSearchState
+import com.example.natifetesttask.presentation.ui.gif.list.GifSearchList
+import com.example.natifetesttask.presentation.ui.gif.pager.GifPager
+import com.example.natifetesttask.presentation.utils.compose.fillMaxSmallestWidth
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -39,7 +46,7 @@ fun GifSearchScreen() {
     )
 }
 
-@OptIn(ExperimentalAnimationApi::class)
+@OptIn(ExperimentalAnimationApi::class, ExperimentalLayoutApi::class)
 @Composable
 private fun GifSearchUI(
     imageLoader: ImageLoader,
@@ -47,6 +54,8 @@ private fun GifSearchUI(
     onNewAction: (GifSearchAction) -> Unit,
 ) {
     val scope = rememberCoroutineScope()
+    Log.d("TEST", "Calculate currentIndex: ${state.currentIndex}")
+    val initialIndex = state.currentIndex
     AnimatedContent(
         transitionSpec = {
             if (targetState) {
@@ -58,20 +67,21 @@ private fun GifSearchUI(
         targetState = state.isDetailsScreen,
     ) {
         if (it) {
-            GifSearchPager(
+            GifPager(
                 items = state.items,
                 imageLoader = imageLoader,
                 onDeleteItem = { id ->
                     onNewAction(DeleteItem(id))
-                    val item = state.items.find { it.id == id } ?: return@GifSearchPager
+                    val item = state.items.find { it.id == id } ?: return@GifPager
                     scope.launch { imageLoader.deleteGifCoilCache(item) }
                 },
                 onBoundReached = { onNewAction(BoundsReached(it)) },
-                initialIndex = state.transitionInfo.itemIndex,
-                onPageScrolled = { onNewAction(NewIndex(it)) },
+                initialIndex = initialIndex,
+                onPageScrolled = { onNewAction(NewCurrentItem(state.items[it].id)) },
                 onBackPressed = { onNewAction(NavigateToGrid) },
             )
         } else {
+            val focusRequester = remember { FocusRequester() }
             Column(
                 modifier = Modifier.fillMaxSize(),
                 horizontalAlignment = Alignment.CenterHorizontally,
@@ -79,19 +89,20 @@ private fun GifSearchUI(
                 OutlinedTextField(
                     modifier = Modifier
                         .padding(20.dp)
-                        .fillMaxWidth(),
+                        .focusRequester(focusRequester)
+                        .fillMaxSmallestWidth(0.75f),
                     value = state.query,
                     onValueChange = { onNewAction(NewQuery(it)) },
                 )
                 if (state.query.isNotBlank()) {
-                    GifSearchColumn(
+                    GifSearchList(
                         items = state.items,
-                        initialPage = state.transitionInfo.itemIndex,
+                        initialPage = initialIndex,
                         initialOffset = -state.transitionInfo.itemOffset,
                         imageLoader = imageLoader,
                         onDeleteItem = { id ->
                             onNewAction(DeleteItem(id))
-                            val item = state.items.find { it.id == id } ?: return@GifSearchColumn
+                            val item = state.items.find { it.id == id } ?: return@GifSearchList
                             scope.launch { imageLoader.deleteGifCoilCache(item) }
                         },
                         onBoundReached = { onNewAction(BoundsReached(it)) },
@@ -109,6 +120,9 @@ private fun GifSearchUI(
                     )
                     Spacer(Modifier.weight(1f))
                 }
+            }
+            LaunchedEffect(Unit) {
+                if (state.isTyping) focusRequester.requestFocus()
             }
         }
     }

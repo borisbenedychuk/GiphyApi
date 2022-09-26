@@ -5,7 +5,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.natifetesttask.domain.model.gif.GifsPagesModel
 import com.example.natifetesttask.domain.usecase.gif.AddToBlacklistUseCase
 import com.example.natifetesttask.domain.usecase.gif.GetPagesUseCase
 import com.example.natifetesttask.domain.utils.Result
@@ -31,17 +30,22 @@ class GifSearchViewModel @Inject constructor(
     fun handleAction(action: GifSearchAction) {
         when (action) {
             is NewQuery -> queryGifs(action.query)
-            is NewIndex -> updateIndex(action.index)
+            is NewCurrentItem -> updateCurrentItemId(action.id)
             is BoundsReached -> boundReached(action.signal)
+            is ChangeFocus -> updateIsTyping(action.isTyping)
             is DeleteItem -> deleteItemById(action.id)
             is NavigateToPager -> navigateToDetails(action.info)
             is NavigateToGrid -> navigateToList()
         }
     }
 
-    private fun updateIndex(newIndex: Int) {
+    private fun updateIsTyping(isTyping: Boolean) {
+        gifSearchState = gifSearchState.copy(isTyping = isTyping)
+    }
+
+    private fun updateCurrentItemId(id: String) {
         gifSearchState = gifSearchState.copy(
-            transitionInfo = gifSearchState.transitionInfo.copy(itemIndex = newIndex)
+            transitionInfo = gifSearchState.transitionInfo.copy(itemId = id)
         )
     }
 
