@@ -12,7 +12,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
-private const val FIVE_HOURS = 1000 * 30 * 1
+private const val FIVE_HOURS = 1000 * 60 * 60 * 5
 private const val PAGE = 25
 
 class GifRepositoryImpl @Inject constructor(
