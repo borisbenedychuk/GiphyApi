@@ -1,14 +1,15 @@
 package com.example.natifetesttask.presentation.ui.gif
 
 import androidx.compose.animation.*
-import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.OutlinedTextField
 import androidx.compose.material.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
@@ -27,7 +28,7 @@ import com.example.natifetesttask.presentation.models.gif.GifSearchAction
 import com.example.natifetesttask.presentation.models.gif.GifSearchAction.*
 import com.example.natifetesttask.presentation.models.gif.GifSearchState
 import com.example.natifetesttask.presentation.ui.gif.list.GifSearchList
-import com.example.natifetesttask.presentation.ui.gif.pager.GifPager
+import com.example.natifetesttask.presentation.ui.gif.pager.GifSearchPager
 import com.example.natifetesttask.presentation.utils.compose.fillMaxSmallestWidth
 import com.example.natifetesttask.presentation.utils.compose.rememberState
 import kotlinx.coroutines.Dispatchers
@@ -66,12 +67,12 @@ private fun GifSearchUI(
         targetState = state.isDetailsScreen,
     ) {
         if (it) {
-            GifPager(
+            GifSearchPager(
                 items = state.items,
                 imageLoader = imageLoader,
                 onDeleteItem = { id ->
                     onNewAction(DeleteItem(id))
-                    val item = state.items.find { it.id == id } ?: return@GifPager
+                    val item = state.items.find { it.id == id } ?: return@GifSearchPager
                     scope.launch { imageLoader.deleteGifCoilCache(item) }
                 },
                 onBoundReached = { onNewAction(BoundsReached(it)) },

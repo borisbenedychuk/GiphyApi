@@ -8,10 +8,10 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import coil.ImageLoader
 import com.example.natifetesttask.presentation.models.gif.GifItem
+import com.example.natifetesttask.presentation.models.gif.ImageState
 import com.example.natifetesttask.presentation.utils.compose.rememberState
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.PagerState
@@ -24,8 +24,9 @@ fun GifSearchPagerLandscape(
     imageLoader: ImageLoader,
     onDeleteItem: (String) -> Unit,
     deleteAnimationProgress: Float,
-    ) {
-        var isLoading by rememberState(false)
+) {
+    var state by rememberState(ImageState.LOADING)
+    var retryHash by rememberState(0)
     val currentItem = items[pagerState.currentPage]
     Row(
         modifier = Modifier
@@ -45,10 +46,12 @@ fun GifSearchPagerLandscape(
                 currentItem = currentItem,
                 pagerState = pagerState,
                 onDeleteItem = onDeleteItem,
-                isLoading = isLoading,
+                loadingState = state,
+                onRetry = { retryHash++ }
             )
         }
         GifPager(
+            retryHash = retryHash,
             deleteAnimationProgress = deleteAnimationProgress,
             modifier = Modifier
                 .padding(10.dp)
@@ -57,7 +60,7 @@ fun GifSearchPagerLandscape(
             items = items,
             imageLoader = imageLoader,
             pagerState = pagerState,
-            onLoading = { isLoading = true },
-            onFinish = { isLoading = false })
+            onStateChanged = { state = it },
+        )
     }
 }

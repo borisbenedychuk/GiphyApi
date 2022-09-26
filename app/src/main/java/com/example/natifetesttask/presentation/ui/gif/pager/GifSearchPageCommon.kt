@@ -22,7 +22,9 @@ import androidx.compose.ui.unit.sp
 import coil.ImageLoader
 import com.example.natifetesttask.presentation.models.gif.BoundSignal
 import com.example.natifetesttask.presentation.models.gif.GifItem
+import com.example.natifetesttask.presentation.models.gif.ImageState
 import com.example.natifetesttask.presentation.ui.gif.DeleteIcon
+import com.example.natifetesttask.presentation.ui.gif.list.RetryIcon
 import com.example.natifetesttask.presentation.utils.compose.isInLandScape
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.PagerState
@@ -31,7 +33,7 @@ import kotlin.math.abs
 
 @OptIn(ExperimentalPagerApi::class)
 @Composable
-fun GifPager(
+fun GifSearchPager(
     items: List<GifItem>,
     imageLoader: ImageLoader,
     onDeleteItem: (String) -> Unit,
@@ -99,7 +101,8 @@ fun GifPagerItemInfo(
     currentItem: GifItem,
     pagerState: PagerState,
     onDeleteItem: (String) -> Unit,
-    isLoading: Boolean,
+    loadingState: ImageState,
+    onRetry: () -> Unit,
 ) {
     Text(
         text = currentItem.title,
@@ -119,20 +122,31 @@ fun GifPagerItemInfo(
         maxLines = 2,
         overflow = TextOverflow.Ellipsis,
     )
-    DeleteIcon(
-        item = currentItem,
-        onDeleteItem = onDeleteItem,
-        modifier = Modifier
-            .fillMaxWidth(0.15f)
-            .padding(top = 30.dp)
-    )
-    if (isLoading) {
-        CircularProgressIndicator(
-            modifier = Modifier
-                .padding(top = 30.dp)
-                .size(40.dp),
-            strokeWidth = 6.dp,
-            color = MaterialTheme.colors.primary,
-        )
+    when (loadingState) {
+        ImageState.LOADING -> {
+            CircularProgressIndicator(
+                modifier = Modifier
+                    .padding(top = 30.dp)
+                    .size(40.dp),
+                strokeWidth = 6.dp,
+                color = MaterialTheme.colors.primary,
+            )
+        }
+        ImageState.ERROR -> {
+            RetryIcon(
+                modifier = Modifier
+                    .fillMaxWidth(0.15f),
+                onRetryClick = onRetry,
+            )
+        }
+        ImageState.SUCCESS -> {
+            DeleteIcon(
+                item = currentItem,
+                onDeleteItem = onDeleteItem,
+                modifier = Modifier
+                    .fillMaxWidth(0.15f)
+                    .padding(top = 30.dp)
+            )
+        }
     }
 }

@@ -9,12 +9,16 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import coil.ImageLoader
 import coil.compose.AsyncImage
 import coil.compose.rememberAsyncImagePainter
+import coil.request.ImageRequest
 import com.example.natifetesttask.R
 import com.example.natifetesttask.presentation.models.gif.GifItem
+import com.example.natifetesttask.presentation.models.gif.ImageState
+import com.example.natifetesttask.presentation.models.gif.ImageState.*
 import com.example.natifetesttask.presentation.utils.compose.rememberState
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
@@ -38,20 +42,23 @@ fun GifSearchPagerPortrait(
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         Spacer(modifier = Modifier.fillMaxHeight(0.1f))
-        var isLoading by rememberState(false)
+        var loadingState by rememberState(LOADING)
+        var retryHash by rememberState(0)
         GifPager(
+            retryHash = retryHash,
             deleteAnimationProgress = deleteAnimationProgress,
             modifier = Modifier.fillMaxWidth(),
             items = items,
             imageLoader = imageLoader,
             pagerState = pagerState,
-            onLoading = { isLoading = true },
-            onFinish = { isLoading = false })
+            onStateChanged = { loadingState = it }
+        )
         GifPagerItemInfo(
             currentItem = currentItem,
             pagerState = pagerState,
             onDeleteItem = onDeleteItem,
-            isLoading = isLoading,
+            loadingState = loadingState,
+            onRetry = { retryHash++ }
         )
     }
 }
@@ -59,14 +66,18 @@ fun GifSearchPagerPortrait(
 @OptIn(ExperimentalPagerApi::class)
 @Composable
 fun GifPager(
+    retryHash: Int,
     items: List<GifItem>,
     imageLoader: ImageLoader,
-    onLoading: () -> Unit,
-    onFinish: () -> Unit,
+    onStateChanged: (ImageState) -> Unit,
     modifier: Modifier = Modifier,
     deleteAnimationProgress: Float,
     pagerState: PagerState = rememberPagerState(),
 ) {
+    val painter = rememberAsyncImagePainter(
+        model = R.drawable.placeholder,
+        imageLoader = imageLoader,
+    )
     HorizontalPager(
         count = items.size,
         state = pagerState,
@@ -74,15 +85,16 @@ fun GifPager(
         verticalAlignment = Alignment.CenterVertically,
     ) { count ->
         AsyncImage(
-            model = items[count].originalUrl,
+            model = ImageRequest.Builder(LocalContext.current)
+                .data(items[count].originalUrl)
+                .setParameter("retry_hash", retryHash, memoryCacheKey = null)
+                .build(),
             imageLoader = imageLoader,
-            onLoading = { onLoading() },
-            onError = { onFinish() },
-            onSuccess = { onFinish() },
-            placeholder = rememberAsyncImagePainter(
-                model = R.drawable.placeholder,
-                imageLoader = imageLoader,
-            ),
+            onLoading = { onStateChanged(LOADING) },
+            onError = { onStateChanged(ERROR) },
+            onSuccess = { onStateChanged(SUCCESS) },
+            placeholder = painter,
+            error = painter,
             modifier = Modifier
                 .fillMaxWidth()
                 .graphicsLayer {
