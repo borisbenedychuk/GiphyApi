@@ -16,7 +16,9 @@ class RemoteGifDatasourceImpl @Inject constructor(
         limit: Int,
         offset: Int,
     ): Result<GifDataResponse> =
-        safeApiCall {
+        safeApiCall(
+            isEmptyPredicate = { it.body()?.gifs?.isEmpty() == true }
+        ) {
             api.searchGifs(
                 apiKey = BuildConfig.API_KEY,
                 query = query,

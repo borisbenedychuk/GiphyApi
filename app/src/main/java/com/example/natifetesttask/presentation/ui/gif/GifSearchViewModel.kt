@@ -103,9 +103,7 @@ class GifSearchViewModel @Inject constructor(
         currentJob = viewModelScope.launch {
             delay(300)
             gifSearchState = gifSearchState.copy(loading = true)
-            val result = getPagesUseCase(query, requestPage)
-            gifSearchState = gifSearchState.copy(loading = false)
-            when (result) {
+            when (val result = getPagesUseCase(query, requestPage)) {
                 is Result.Success -> {
                     currentPage = if (requestPage == 0) 1 else requestPage
                     result.data.collect { pagesModel ->
@@ -113,12 +111,21 @@ class GifSearchViewModel @Inject constructor(
                             query = gifSearchState.query,
                             items = pagesModel.models.map { it.asItem() },
                             showFooter = !pagesModel.isFinished,
-                            loading = false
+                            loading = false,
                         )
                     }
                 }
                 is Result.Error -> {
-                    gifSearchState = gifSearchState.copy(errorMsg = result.msg.orEmpty())
+                    gifSearchState = gifSearchState.copy(
+                        errorMsg = result.msg.orEmpty(),
+                        loading = false,
+                    )
+                }
+                is Result.Empty -> {
+                    gifSearchState = gifSearchState.copy(
+                        items = emptyList(),
+                        loading = false,
+                    )
                 }
             }
         }

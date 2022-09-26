@@ -4,13 +4,21 @@ import com.example.natifetesttask.domain.utils.Result
 import retrofit2.HttpException
 import retrofit2.Response
 
-suspend fun <T> safeApiCall(call: suspend () -> Response<T>): Result<T> =
+suspend fun <T> safeApiCall(
+    isEmptyPredicate: (Response<T>) -> Boolean = { it.body() == null },
+    call: suspend () -> Response<T>,
+): Result<T> =
     try {
         val response: Response<T> = call()
         if (response.isSuccessful) {
-            response.body()?.let {
-                Result.Success(it)
-            } ?: Result.Error(response.message(), response.code())
+            val isEmpty = isEmptyPredicate(response)
+            if (isEmpty) {
+                Result.Empty
+            } else {
+                response.body()?.let {
+                    Result.Success(it)
+                } ?: Result.Error(response.message(), response.code())
+            }
         } else {
             Result.Error(response.message(), response.code())
         }

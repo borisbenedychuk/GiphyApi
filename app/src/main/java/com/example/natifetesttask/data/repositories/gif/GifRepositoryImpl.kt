@@ -80,7 +80,7 @@ class GifRepositoryImpl @Inject constructor(
     }
 
     override suspend fun loadPageAndCheckIfHasMore(query: String, page: Int): Result<Boolean> {
-        val currentQueryInfo = gifInfoCache.getQueryInfoEntity(query) ?: return Result.Error()
+        val currentQueryInfo = gifInfoCache.getQueryInfoEntity(query) ?: return Result.Empty
         val allPagesInCache = page * PAGE <= currentQueryInfo.cachedPages - 1
         return if (!allPagesInCache) {
             val offset = currentQueryInfo.cachedPages * PAGE
@@ -132,5 +132,6 @@ class GifRepositoryImpl @Inject constructor(
                 Result.Success(cachePages < totalPages)
             }
             is Result.Error -> result
+            is Result.Empty -> result
         }
 }

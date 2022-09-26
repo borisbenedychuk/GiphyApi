@@ -27,6 +27,7 @@ class GetPagesUseCase @Inject constructor(
     ): Result<Flow<GifsPagesModel>> {
         return when (loadResult) {
             is Result.Error -> loadResult
+            is Result.Empty -> loadResult
             is Result.Success -> {
                 val hasMorePages = loadResult.data
                 val pages = List(3) { i -> requestedPage - 1 + i }.filter { page -> page >= 0 }
