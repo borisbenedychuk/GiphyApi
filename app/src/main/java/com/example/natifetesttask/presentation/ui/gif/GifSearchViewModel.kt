@@ -125,6 +125,7 @@ class GifSearchViewModel @Inject constructor(
                     gifSearchState = gifSearchState.copy(
                         items = emptyList(),
                         loading = false,
+                        showFooter = false,
                     )
                 }
             }
