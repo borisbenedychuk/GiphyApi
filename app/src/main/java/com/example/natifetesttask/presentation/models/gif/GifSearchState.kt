@@ -8,7 +8,6 @@ data class GifSearchState(
     val page: Int = 0,
     val showFooter: Boolean = false,
     val isDetailsScreen: Boolean = false,
-    val isTyping: Boolean = false,
     val transitionInfo: TransitionInfo = TransitionInfo(),
 ) {
 

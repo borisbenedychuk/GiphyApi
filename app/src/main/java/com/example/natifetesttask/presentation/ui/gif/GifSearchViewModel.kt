@@ -29,18 +29,15 @@ class GifSearchViewModel @Inject constructor(
 
     fun handleAction(action: GifSearchAction) {
         when (action) {
-            is NewQuery -> queryGifs(action.query)
+            is NewQuery -> {
+                queryGifs(action.query)
+            }
             is NewCurrentItem -> updateCurrentItemId(action.id)
             is BoundsReached -> boundReached(action.signal)
-            is ChangeFocus -> updateIsTyping(action.isTyping)
             is DeleteItem -> deleteItemById(action.id)
             is NavigateToPager -> navigateToDetails(action.info)
             is NavigateToGrid -> navigateToList()
         }
-    }
-
-    private fun updateIsTyping(isTyping: Boolean) {
-        gifSearchState = gifSearchState.copy(isTyping = isTyping)
     }
 
     private fun updateCurrentItemId(id: String) {

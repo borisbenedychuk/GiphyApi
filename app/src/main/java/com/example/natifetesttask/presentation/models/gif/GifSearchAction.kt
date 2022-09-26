@@ -7,5 +7,4 @@ sealed interface GifSearchAction {
     class DeleteItem(val id: String) : GifSearchAction
     class NavigateToPager(val info: TransitionInfo) : GifSearchAction
     object NavigateToGrid : GifSearchAction
-    class ChangeFocus(val isTyping: Boolean) : GifSearchAction
 }

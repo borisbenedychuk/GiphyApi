@@ -80,6 +80,7 @@ fun GifPager(
     }
     LaunchedEffect(boundSignal) {
         if (boundSignal.isBoundReached) {
+
             onBoundReached(boundSignal)
         }
     }

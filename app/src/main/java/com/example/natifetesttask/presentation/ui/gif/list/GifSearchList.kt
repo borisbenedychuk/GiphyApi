@@ -2,7 +2,6 @@ package com.example.natifetesttask.presentation.ui.gif.list
 
 import android.content.res.Configuration
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.*
@@ -10,7 +9,11 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalView
+import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.ui.unit.dp
+import androidx.core.view.WindowInsetsCompat
 import coil.ImageLoader
 import com.example.natifetesttask.presentation.models.gif.BoundSignal
 import com.example.natifetesttask.presentation.models.gif.GifItem
