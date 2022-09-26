@@ -36,7 +36,13 @@ class GifSearchViewModel @Inject constructor(
             is DeleteItem -> deleteItemById(action.id)
             is NavigateToPager -> navigateToDetails(action.info)
             is NavigateToGrid -> navigateToList()
+            is RetryLoad -> retryLoad()
         }
+    }
+
+    private fun retryLoad() {
+        gifSearchState = gifSearchState.copy(errorMsg = null)
+        boundReached(BoundSignal.BOTTOM_REACHED)
     }
 
     private fun updateCurrentItemId(id: String) {

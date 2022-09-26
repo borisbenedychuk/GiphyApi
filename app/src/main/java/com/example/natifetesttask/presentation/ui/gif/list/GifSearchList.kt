@@ -23,6 +23,7 @@ fun GifSearchList(
     imageLoader: ImageLoader,
     onDeleteItem: (String) -> Unit,
     onBoundReached: (BoundSignal) -> Unit,
+    onRetryClick: () -> Unit,
     onItemClick: (TransitionInfo) -> Unit,
     modifier: Modifier = Modifier,
     initialPage: Int = 0,
@@ -61,7 +62,7 @@ fun GifSearchList(
             onDeleteItem = onDeleteItem,
             showFooter = showFooter,
             errorMsg = errorMsg,
-            onRetryClick = { onBoundReached(BoundSignal.BOTTOM_REACHED) },
+            onRetryClick = onRetryClick,
         )
     }
     if (configuration == Configuration.ORIENTATION_LANDSCAPE) {

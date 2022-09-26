@@ -110,6 +110,7 @@ private fun GifSearchUI(
                         onItemClick = { info -> onNewAction(NavigateToPager(info)) },
                         showFooter = state.showFooter,
                         errorMsg = state.errorMsg,
+                        onRetryClick = { onNewAction(RetryLoad) }
                     )
                 } else {
                     Spacer(Modifier.weight(1f))
