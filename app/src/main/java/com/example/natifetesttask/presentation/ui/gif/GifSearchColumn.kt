@@ -15,6 +15,7 @@ import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -24,10 +25,12 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.FilterQuality
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import coil.ImageLoader
 import coil.compose.AsyncImage
 import coil.compose.rememberAsyncImagePainter
+import coil.request.ImageRequest
 import com.example.natifetesttask.R
 import com.example.natifetesttask.presentation.models.gif.BoundSignal
 import com.example.natifetesttask.presentation.models.gif.GifItem
@@ -107,6 +110,10 @@ fun GifSearchColumn(
     }
 }
 
+enum class ImageState {
+    ERROR, SUCCESS, LOADING
+}
+
 @Composable
 private fun GifSearchColumnItem(
     item: GifItem,
@@ -114,16 +121,18 @@ private fun GifSearchColumnItem(
     onItemClick: () -> Unit,
     onDeleteItem: (String) -> Unit,
 ) {
-    var isLoading by rememberState(false)
-    Box(
-        modifier = Modifier.padding(30.dp)
-    ) {
+    var retryHash by rememberState(0)
+    var state by rememberState(ImageState.LOADING)
+    Box(modifier = Modifier.padding(30.dp)) {
         AsyncImage(
-            model = item.smallUrl,
+            model = ImageRequest.Builder(LocalContext.current)
+                .data(item.smallUrl)
+                .setParameter("retry_hash", retryHash, memoryCacheKey = null)
+                .build(),
             imageLoader = imageLoader,
-            onLoading = { isLoading = true },
-            onError = { isLoading = false },
-            onSuccess = { isLoading = false },
+            onLoading = { state = ImageState.LOADING },
+            onError = { state = ImageState.ERROR },
+            onSuccess = { state = ImageState.SUCCESS },
             placeholder = rememberAsyncImagePainter(
                 model = R.drawable.placeholder,
                 imageLoader = imageLoader,
@@ -135,32 +144,60 @@ private fun GifSearchColumnItem(
                 .fillMaxWidth(0.7f)
                 .aspectRatio(1f)
                 .clickable(
+                    enabled = state == ImageState.SUCCESS,
                     onClick = onItemClick,
                     indication = rememberRipple(color = Color.Black),
                     interactionSource = rememberInteractionSource(),
                 ),
             contentDescription = null,
         )
-        if (isLoading) {
-            CircularProgressIndicator(
-                modifier = Modifier
-                    .background(Color(0x4D000000), RoundedCornerShape(3.dp))
-                    .padding(10.dp)
-                    .fillMaxSize(0.1f)
-                    .aspectRatio(1f)
-                    .align(Alignment.Center),
-                strokeWidth = 6.dp,
-                color = Color.White,
-            )
-        } else {
-            DeleteIcon(
-                item = item,
-                onDeleteItem = onDeleteItem,
-                modifier = Modifier
-                    .align(Alignment.TopEnd)
-                    .padding(10.dp)
-                    .fillMaxWidth(0.15f)
-            )
+        when (state) {
+            ImageState.LOADING -> {
+                CircularProgressIndicator(
+                    modifier = Modifier
+                        .background(Color(0x4D000000), RoundedCornerShape(3.dp))
+                        .padding(10.dp)
+                        .fillMaxSize(0.1f)
+                        .aspectRatio(1f)
+                        .align(Alignment.Center),
+                    strokeWidth = 6.dp,
+                    color = Color.White,
+                )
+            }
+            ImageState.ERROR -> {
+                Icon(
+                    imageVector = Icons.Default.Refresh,
+                    contentDescription = "delete gif",
+                    tint = Color.Black,
+                    modifier = Modifier
+                        .fillMaxWidth(0.15f)
+                        .clip(CircleShape)
+                        .align(Alignment.Center)
+                        .aspectRatio(1f)
+                        .shadow(5.dp, CircleShape)
+                        .clickable(
+                            enabled = true,
+                            interactionSource = remember(::MutableInteractionSource),
+                            indication = rememberRipple(color = Color.Black),
+                            onClick = {
+                                retryHash++
+                            },
+                        )
+                        .background(color = Color.White, shape = CircleShape)
+                        .clip(CircleShape)
+                        .padding(12.dp),
+                )
+            }
+            ImageState.SUCCESS -> {
+                DeleteIcon(
+                    item = item,
+                    onDeleteItem = onDeleteItem,
+                    modifier = Modifier
+                        .align(Alignment.TopEnd)
+                        .padding(10.dp)
+                        .fillMaxWidth(0.15f)
+                )
+            }
         }
     }
 }
