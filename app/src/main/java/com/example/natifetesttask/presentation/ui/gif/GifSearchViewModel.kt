@@ -5,6 +5,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.natifetesttask.domain.model.gif.GifsPagesModel
 import com.example.natifetesttask.domain.usecase.gif.AddToBlacklistUseCase
 import com.example.natifetesttask.domain.usecase.gif.GetPagesUseCase
 import com.example.natifetesttask.domain.utils.Result
@@ -80,14 +81,12 @@ class GifSearchViewModel @Inject constructor(
         currentJob = viewModelScope.launch {
             when (val result = getPagesUseCase(query, currentPage)) {
                 is Result.Success -> {
-                    result.data?.let { flow ->
-                        flow.collect { list ->
-                            gifSearchState = gifSearchState.copy(
-                                query = gifSearchState.query,
-                                items = list.map { it.asItem() },
-                                showFooter = list.isNotEmpty(),
-                            )
-                        }
+                    result.data.collect { pagesModel ->
+                        gifSearchState = gifSearchState.copy(
+                            query = gifSearchState.query,
+                            items = pagesModel.models.map { it.asItem() },
+                            showFooter = !pagesModel.isFinished,
+                        )
                     }
                 }
                 is Result.Error -> {

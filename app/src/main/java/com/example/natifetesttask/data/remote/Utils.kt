@@ -8,7 +8,9 @@ suspend fun <T> safeApiCall(call: suspend () -> Response<T>): Result<T> =
     try {
         val response: Response<T> = call()
         if (response.isSuccessful) {
-            Result.Success(response.body())
+            response.body()?.let {
+                Result.Success(it)
+            } ?: Result.Error(response.message(), response.code())
         } else {
             Result.Error(response.message(), response.code())
         }

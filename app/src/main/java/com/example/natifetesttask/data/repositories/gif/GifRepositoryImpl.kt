@@ -4,7 +4,7 @@ import com.example.natifetesttask.data.datasources.gif.CacheGifDatasource
 import com.example.natifetesttask.data.datasources.gif.RemoteGifDatasource
 import com.example.natifetesttask.data.db.entities.QueryInfoEntity
 import com.example.natifetesttask.data.remote.responses.GifDataResponse
-import com.example.natifetesttask.domain.model.gif.GifModel
+import com.example.natifetesttask.domain.model.gif.GifsPagesModel
 import com.example.natifetesttask.domain.repository.gif.GifRepository
 import com.example.natifetesttask.domain.utils.Result
 import com.example.natifetesttask.presentation.ui.gif.PAGE
@@ -30,7 +30,10 @@ class GifRepositoryImpl @Inject constructor(
 
     override suspend fun addGifToBlackList(id: String) = cache.addGifToBlacklist(id)
 
-    override suspend fun getPages(query: String, currentPage: Int): Result<Flow<List<GifModel>>> =
+    override suspend fun getPages(
+        query: String,
+        currentPage: Int
+    ): Result<Flow<GifsPagesModel>> =
         with(Dispatchers.Default) {
             val queryInfo = cache.getQueryInfoEntity(query)
             val result =
@@ -47,7 +50,12 @@ class GifRepositoryImpl @Inject constructor(
                             (currentPage - 1 + it).coerceAtLeast(0)
                         }.distinct()
                     Result.Success(
-                        cache.getGifs(query, pages).map { list -> list.map { it.asGifModel() } }
+                        cache.getGifs(query, pages).map {
+                            GifsPagesModel(
+                                isFinished = cache.getQueryInfoEntity(query)
+                                    ?.run { cachedPages == totalPages } ?: false,
+                                it.map { it.asGifModel() })
+                        }
                     )
                 }
             }
@@ -64,7 +72,7 @@ class GifRepositoryImpl @Inject constructor(
             offset = 0,
         )
         if (result is Result.Success) {
-            val remoteResult = result.data?.gifs?.firstOrNull()
+            val remoteResult = result.data.gifs?.firstOrNull()
             val cacheResult = cache.getFirstGif(query)
             return when {
                 remoteResult == null || cacheResult == null ->
@@ -126,7 +134,7 @@ class GifRepositoryImpl @Inject constructor(
                 queryInfoTime = currentQueryInfo.lastQueryTime,
             )
         } else {
-            Result.Success()
+            Result.Success(Unit)
         }
     }
 
@@ -138,7 +146,7 @@ class GifRepositoryImpl @Inject constructor(
         queryInfoTime: Long,
     ): Result<Unit> = when (result) {
         is Result.Success -> {
-            result.data?.let { data ->
+            result.data.let { data ->
                 val blackList = cache.getBlacklistIds()
                 data.pagination?.totalCount?.let { count ->
                     val totalPages = count / PAGE + if (count % PAGE != 0) 1 else 0
@@ -161,8 +169,9 @@ class GifRepositoryImpl @Inject constructor(
                         }
                     cache.saveGifs(entities)
                 }
+
             }
-            Result.Success()
+            Result.Success(Unit)
         }
         is Result.Error -> result
     }
