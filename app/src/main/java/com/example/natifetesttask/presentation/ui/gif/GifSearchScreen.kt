@@ -1,14 +1,20 @@
 package com.example.natifetesttask.presentation.ui.gif
 
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material.TextField
+import androidx.compose.animation.*
+import androidx.compose.foundation.layout.*
+import androidx.compose.material.MaterialTheme
+import androidx.compose.material.OutlinedTextField
+import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.ImageLoader
 import coil.annotation.ExperimentalCoilApi
@@ -33,18 +39,25 @@ fun GifSearchScreen() {
     )
 }
 
+@OptIn(ExperimentalAnimationApi::class)
 @Composable
 private fun GifSearchUI(
     imageLoader: ImageLoader,
     state: GifSearchState,
     onNewAction: (GifSearchAction) -> Unit,
 ) {
-    Column(
-        modifier = Modifier.fillMaxSize(),
-        horizontalAlignment = Alignment.CenterHorizontally,
+    val scope = rememberCoroutineScope()
+    AnimatedContent(
+        transitionSpec = {
+            if (targetState) {
+                scaleIn(initialScale = 0.8f) + fadeIn() with slideOutHorizontally { -it }
+            } else {
+                slideInHorizontally { -it } with scaleOut(targetScale = 0.8f) + fadeOut()
+            }
+        },
+        targetState = state.isDetailsScreen,
     ) {
-        val scope = rememberCoroutineScope()
-        if (state.isDetailsScreen) {
+        if (it) {
             GifSearchPager(
                 items = state.items,
                 imageLoader = imageLoader,
@@ -59,23 +72,44 @@ private fun GifSearchUI(
                 onBackPressed = { onNewAction(NavigateToGrid) },
             )
         } else {
-            TextField(
-                value = state.query,
-                onValueChange = { onNewAction(NewQuery(it)) },
-            )
-            GifSearchGrid(
-                items = state.items,
-                initialPage = state.transitionInfo.itemIndex,
-                initialOffsetY = -state.transitionInfo.itemOffset.y,
-                imageLoader = imageLoader,
-                onDeleteItem = { id ->
-                    onNewAction(DeleteItem(id))
-                    val item = state.items.find { it.id == id } ?: return@GifSearchGrid
-                    scope.launch { imageLoader.deleteGifCoilCache(item) }
-                },
-                onBoundReached = { onNewAction(BoundsReached(it)) },
-                onItemClick = { onNewAction(NavigateToPager(it)) },
-            )
+            Column(
+                modifier = Modifier.fillMaxSize(),
+                horizontalAlignment = Alignment.CenterHorizontally,
+            ) {
+                OutlinedTextField(
+                    modifier = Modifier
+                        .padding(20.dp)
+                        .fillMaxWidth(),
+                    value = state.query,
+                    onValueChange = { onNewAction(NewQuery(it)) },
+                )
+                if (state.query.isNotBlank()) {
+                    GifSearchColumn(
+                        items = state.items,
+                        initialPage = state.transitionInfo.itemIndex,
+                        initialOffset = -state.transitionInfo.itemOffset,
+                        imageLoader = imageLoader,
+                        onDeleteItem = { id ->
+                            onNewAction(DeleteItem(id))
+                            val item = state.items.find { it.id == id } ?: return@GifSearchColumn
+                            scope.launch { imageLoader.deleteGifCoilCache(item) }
+                        },
+                        onBoundReached = { onNewAction(BoundsReached(it)) },
+                        onItemClick = { onNewAction(NavigateToPager(it)) },
+                        showFooter = state.showFooter,
+                    )
+                } else {
+                    Spacer(Modifier.weight(1f))
+                    Text(
+                        text = "Start typing",
+                        color = MaterialTheme.colors.primary,
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 30.sp,
+                        textAlign = TextAlign.Center,
+                    )
+                    Spacer(Modifier.weight(1f))
+                }
+            }
         }
     }
 }
@@ -92,11 +126,12 @@ private fun getGifSearchComponent(): GifSearchComponent {
 }
 
 @OptIn(ExperimentalCoilApi::class)
-private suspend fun ImageLoader.deleteGifCoilCache(item: GifItem) = withContext(Dispatchers.IO) {
-    with(item) {
-        listOf(originalUrl, smallUrl).forEach {
-            diskCache?.remove(it)
-            memoryCache?.remove(MemoryCache.Key(it))
+private suspend fun ImageLoader.deleteGifCoilCache(item: GifItem) =
+    withContext(Dispatchers.IO) {
+        with(item) {
+            listOf(originalUrl, smallUrl).forEach {
+                diskCache?.remove(it)
+                memoryCache?.remove(MemoryCache.Key(it))
+            }
         }
     }
-}

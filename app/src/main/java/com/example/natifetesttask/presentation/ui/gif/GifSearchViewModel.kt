@@ -14,14 +14,14 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-const val PAGE = 16
+const val PAGE = 20
 
 class GifSearchViewModel @Inject constructor(
     private val getPagesUseCase: GetPagesUseCase,
     private val addToBlacklistUseCase: AddToBlacklistUseCase,
 ) : ViewModel() {
 
-    var gifSearchState: GifSearchState by mutableStateOf(GifSearchState(items = emptyList()))
+    var gifSearchState: GifSearchState by mutableStateOf(GifSearchState())
         private set
 
     private var currentJob: Job? = null
@@ -69,7 +69,7 @@ class GifSearchViewModel @Inject constructor(
         val query = gifSearchState.query
         when {
             signal == BoundSignal.BOTTOM_REACHED -> currentPage++
-            signal == BoundSignal.TOP_REACHED && currentPage > 2 -> currentPage--
+            signal == BoundSignal.TOP_REACHED && currentPage > 1 -> currentPage--
             else -> return
         }
         observePages(query)
@@ -82,11 +82,11 @@ class GifSearchViewModel @Inject constructor(
                 is Result.Success -> {
                     result.data?.let { flow ->
                         flow.collect { list ->
-                            val newGifSearchState = GifSearchState(
+                            gifSearchState = gifSearchState.copy(
                                 query = gifSearchState.query,
                                 items = list.map { it.asItem() },
+                                showFooter = list.isNotEmpty(),
                             )
-                            gifSearchState = newGifSearchState
                         }
                     }
                 }

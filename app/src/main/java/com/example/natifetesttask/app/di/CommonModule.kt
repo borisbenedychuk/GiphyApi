@@ -56,7 +56,7 @@ class CommonModule {
         return ImageLoader.Builder(context)
             .memoryCache {
                 MemoryCache.Builder(context)
-                    .maxSizePercent(0.25)
+                    .maxSizePercent(0.5)
                     .build()
             }
             .diskCache {

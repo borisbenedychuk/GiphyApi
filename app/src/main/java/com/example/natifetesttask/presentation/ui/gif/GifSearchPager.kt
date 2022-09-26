@@ -3,15 +3,16 @@ package com.example.natifetesttask.presentation.ui.gif
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.*
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.CircularProgressIndicator
+import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -25,6 +26,7 @@ import com.example.natifetesttask.presentation.models.gif.GifItem
 import com.example.natifetesttask.presentation.utils.compose.rememberState
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
+import com.google.accompanist.pager.PagerState
 import com.google.accompanist.pager.rememberPagerState
 import kotlin.math.abs
 
@@ -61,20 +63,19 @@ fun GifSearchPager(
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         Spacer(modifier = Modifier.fillMaxHeight(0.1f))
-        HorizontalPager(
-            count = items.size,
-            state = pagerState,
-            modifier = modifier.fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically,
-        ) { count ->
-            GifPagerItem(
-                item = items[count],
-                imageLoader = imageLoader,
-            )
-        }
+        var isLoading by rememberState(false)
+        GifPager(
+            items = items,
+            imageLoader = imageLoader,
+            pagerState = pagerState,
+            onLoading = { isLoading = true },
+            onFinish = { isLoading = false })
         Text(
             text = currentItem.title,
-            style = MaterialTheme.typography.body1.copy(fontSize = 20.sp),
+            style = MaterialTheme.typography.body1.copy(
+                fontSize = 20.sp,
+                fontWeight = FontWeight.Bold
+            ),
             color = Color.White,
             modifier = Modifier
                 .padding(top = 30.dp)
@@ -87,16 +88,20 @@ fun GifSearchPager(
             maxLines = 2,
             overflow = TextOverflow.Ellipsis,
         )
-        IconButton(
-            onClick = { onDeleteItem(currentItem.id) },
+        DeleteIcon(
+            item = currentItem,
+            onDeleteItem = onDeleteItem,
             modifier = Modifier
+                .fillMaxWidth(0.15f)
                 .padding(top = 30.dp)
-                .size(50.dp)
-        ) {
-            Icon(
-                imageVector = Icons.Default.Delete,
-                contentDescription = "delete gif",
-                tint = MaterialTheme.colors.onError,
+        )
+        if (isLoading) {
+            CircularProgressIndicator(
+                modifier = Modifier
+                    .padding(top = 30.dp)
+                    .size(40.dp),
+                strokeWidth = 6.dp,
+                color = Color.White,
             )
         }
         BackHandler(onBack = onBackPressed)
@@ -109,21 +114,27 @@ fun GifSearchPager(
     }
 }
 
+@OptIn(ExperimentalPagerApi::class)
 @Composable
-private fun GifPagerItem(
-    item: GifItem,
+private fun GifPager(
+    items: List<GifItem>,
+    pagerState: PagerState = rememberPagerState(),
     imageLoader: ImageLoader,
+    onLoading: () -> Unit,
+    onFinish: () -> Unit,
 ) {
-    var isLoading by rememberState(false)
-    Box(
-        contentAlignment = Alignment.Center,
-    ) {
+    HorizontalPager(
+        count = items.size,
+        state = pagerState,
+        modifier = Modifier.fillMaxWidth(),
+        verticalAlignment = Alignment.CenterVertically,
+    ) { count ->
         AsyncImage(
-            model = item.originalUrl,
+            model = items[count].originalUrl,
             imageLoader = imageLoader,
-            onLoading = { isLoading = true },
-            onError = { isLoading = false },
-            onSuccess = { isLoading = false },
+            onLoading = { onLoading() },
+            onError = { onFinish() },
+            onSuccess = { onFinish() },
             placeholder = rememberAsyncImagePainter(
                 model = R.drawable.placeholder,
                 imageLoader = imageLoader,
@@ -133,15 +144,6 @@ private fun GifPagerItem(
                 .height(400.dp),
             contentDescription = null,
         )
-        if (isLoading) {
-            CircularProgressIndicator(
-                color = Color.Black,
-                modifier = Modifier
-                    .fillMaxSize(0.15f)
-                    .align(Alignment.TopEnd)
-                    .padding(top = 20.dp, end = 20.dp),
-                strokeWidth = 5.dp
-            )
-        }
+
     }
 }

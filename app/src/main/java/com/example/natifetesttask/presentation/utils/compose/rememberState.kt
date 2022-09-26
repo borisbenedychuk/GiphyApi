@@ -1,5 +1,6 @@
 package com.example.natifetesttask.presentation.utils.compose
 
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -12,4 +13,9 @@ fun <T> rememberState() = remember {
 @Composable
 fun <T> rememberState(initial: T) = remember {
     mutableStateOf(initial)
+}
+
+@Composable
+fun rememberInteractionSource() = remember {
+    MutableInteractionSource()
 }

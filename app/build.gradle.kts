@@ -53,7 +53,7 @@ android {
 
 dependencies {
     val coreKtx = "1.9.0"
-    val compose = "1.2.1"
+    val compose = "1.1.1"
     val coil = "2.2.1"
     val room = "2.4.3"
     val dagger = "2.44"

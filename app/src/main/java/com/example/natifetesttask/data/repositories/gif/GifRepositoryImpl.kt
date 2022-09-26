@@ -39,8 +39,8 @@ class GifRepositoryImpl @Inject constructor(
                 is Result.Error -> result
                 is Result.Success -> {
                     val pages =
-                        List(5) {
-                            (currentPage - 2 + it).coerceAtLeast(0)
+                        List(3) {
+                            (currentPage - 1 + it).coerceAtLeast(0)
                         }.distinct()
                     Result.Success(
                         cache.getGifs(query, pages).map { list -> list.map { it.asGifModel() } }
