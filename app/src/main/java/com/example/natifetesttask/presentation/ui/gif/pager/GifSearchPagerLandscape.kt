@@ -1,15 +1,16 @@
 package com.example.natifetesttask.presentation.ui.gif.pager
 
-import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
-import androidx.compose.runtime.*
+import androidx.compose.material.MaterialTheme
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import coil.ImageLoader
-import com.example.natifetesttask.presentation.models.gif.BoundSignal
 import com.example.natifetesttask.presentation.models.gif.GifItem
 import com.example.natifetesttask.presentation.utils.compose.rememberState
 import com.google.accompanist.pager.ExperimentalPagerApi
@@ -22,13 +23,14 @@ fun GifSearchPagerLandscape(
     items: List<GifItem>,
     imageLoader: ImageLoader,
     onDeleteItem: (String) -> Unit,
-) {
-    var isLoading by rememberState(false)
+    deleteAnimationProgress: Float,
+    ) {
+        var isLoading by rememberState(false)
     val currentItem = items[pagerState.currentPage]
     Row(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color.Black),
+            .background(MaterialTheme.colors.background),
         horizontalArrangement = Arrangement.spacedBy(30.dp)
     ) {
         Column(
@@ -47,6 +49,7 @@ fun GifSearchPagerLandscape(
             )
         }
         GifPager(
+            deleteAnimationProgress = deleteAnimationProgress,
             modifier = Modifier
                 .padding(10.dp)
                 .weight(1f)

@@ -9,11 +9,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalView
-import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.ui.unit.dp
-import androidx.core.view.WindowInsetsCompat
 import coil.ImageLoader
 import com.example.natifetesttask.presentation.models.gif.BoundSignal
 import com.example.natifetesttask.presentation.models.gif.GifItem
@@ -49,7 +45,7 @@ fun GifSearchList(
     }
     val configuration = LocalConfiguration.current.orientation
     val lazyListScopeBody: LazyListScope.() -> Unit = {
-        GifListBody(
+        gifItems(
             items = items,
             imageLoader = imageLoader,
             onItemClick = { index ->

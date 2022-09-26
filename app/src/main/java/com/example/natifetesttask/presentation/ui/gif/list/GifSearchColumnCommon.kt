@@ -1,9 +1,13 @@
 package com.example.natifetesttask.presentation.ui.gif.list
 
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.CircleShape
@@ -34,13 +38,14 @@ import coil.request.ImageRequest
 import com.example.natifetesttask.R
 import com.example.natifetesttask.presentation.models.gif.GifItem
 import com.example.natifetesttask.presentation.models.gif.ImageState
+import com.example.natifetesttask.presentation.theme.ui.NatifeTheme
 import com.example.natifetesttask.presentation.ui.gif.DeleteIcon
 import com.example.natifetesttask.presentation.utils.compose.fillMaxSmallestWidth
-import com.example.natifetesttask.presentation.utils.compose.isInLandScape
 import com.example.natifetesttask.presentation.utils.compose.rememberInteractionSource
 import com.example.natifetesttask.presentation.utils.compose.rememberState
 
-fun LazyListScope.GifListBody(
+@OptIn(ExperimentalFoundationApi::class)
+fun LazyListScope.gifItems(
     items: List<GifItem>,
     imageLoader: ImageLoader,
     onItemClick: (Int) -> Unit,
@@ -53,6 +58,7 @@ fun LazyListScope.GifListBody(
         key = { i, item -> item.originalUrl },
     ) { i, item ->
         GifSearchColumnItem(
+            modifier = Modifier.animateItemPlacement(),
             item = item,
             imageLoader = imageLoader,
             onItemClick = { onItemClick(i) },
@@ -83,7 +89,7 @@ fun GifSearchColumnItem(
     var retryHash by rememberState(0)
     var state by rememberState(ImageState.LOADING)
     Box(
-        modifier = Modifier.padding(30.dp)
+        modifier = modifier.padding(30.dp)
     ) {
         AsyncImage(
             model = ImageRequest.Builder(LocalContext.current)
@@ -100,14 +106,14 @@ fun GifSearchColumnItem(
                 filterQuality = FilterQuality.Low,
             ),
             contentScale = ContentScale.Crop,
-            modifier = modifier
-                .fillMaxSmallestWidth(if (isInLandScape()) 0.5f else 0.75f)
-                .clip(RoundedCornerShape(if (isInLandScape()) 20.dp else 30.dp))
+            modifier = Modifier
+                .fillMaxSmallestWidth(NatifeTheme.dimensions.cardImageWidthPercent)
+                .clip(RoundedCornerShape(NatifeTheme.dimensions.cardImageCornerRadius))
                 .aspectRatio(1f)
                 .clickable(
                     enabled = state == ImageState.SUCCESS,
                     onClick = onItemClick,
-                    indication = rememberRipple(color = Color.Black),
+                    indication = rememberRipple(color = MaterialTheme.colors.primary),
                     interactionSource = rememberInteractionSource(),
                 ),
             contentDescription = null,
@@ -117,14 +123,14 @@ fun GifSearchColumnItem(
                 ListLoadingIndicator(
                     modifier = Modifier
                         .align(Alignment.Center)
-                        .fillMaxSmallestWidth(if (isInLandScape()) 0.066f else 0.1f)
+                        .fillMaxSmallestWidth(NatifeTheme.dimensions.cardProgressBarWidthPercent)
                 )
             }
             ImageState.ERROR -> {
                 RetryIcon(
                     modifier = Modifier
                         .align(Alignment.Center)
-                        .fillMaxSmallestWidth(if (isInLandScape()) 0.1f else 0.15f),
+                        .fillMaxSmallestWidth(NatifeTheme.dimensions.cardRetryButtonWidthPercent),
                     onRetryClick = { retryHash++ },
                 )
             }
@@ -134,7 +140,7 @@ fun GifSearchColumnItem(
                     onDeleteItem = onDeleteItem,
                     modifier = Modifier
                         .align(Alignment.TopEnd)
-                        .padding(if (isInLandScape()) 6.dp else 10.dp)
+                        .padding(NatifeTheme.dimensions.cardDeleteButtonPadding)
                 )
             }
         }
@@ -148,8 +154,8 @@ fun RetryIcon(
 ) {
     Icon(
         imageVector = Icons.Default.Refresh,
-        contentDescription = "delete gif",
-        tint = Color.Black,
+        contentDescription = "Delete gif",
+        tint = MaterialTheme.colors.primary,
         modifier = modifier
             .clip(CircleShape)
             .aspectRatio(1f)
@@ -157,10 +163,10 @@ fun RetryIcon(
             .clickable(
                 enabled = true,
                 interactionSource = remember(::MutableInteractionSource),
-                indication = rememberRipple(color = Color.Black),
+                indication = rememberRipple(color = MaterialTheme.colors.primary),
                 onClick = onRetryClick,
             )
-            .background(color = Color.White, shape = CircleShape)
+            .background(color = MaterialTheme.colors.surface, shape = CircleShape)
             .clip(CircleShape)
             .padding(12.dp),
     )
@@ -172,11 +178,11 @@ fun ListLoadingIndicator(
 ) {
     CircularProgressIndicator(
         modifier = Modifier
-            .background(Color(0x4D000000), RoundedCornerShape(3.dp))
-            .padding(if (isInLandScape()) 5.dp else 10.dp)
+            .background(Color.Black.copy(alpha = 0.4f), RoundedCornerShape(3.dp))
+            .padding(NatifeTheme.dimensions.footerProgressBarPadding)
             .then(modifier)
             .aspectRatio(1f),
-        strokeWidth = if (isInLandScape()) 3.dp else 6.dp,
-        color = Color.White,
+        strokeWidth = NatifeTheme.dimensions.footerProgressBarStrokeWidth,
+        color = MaterialTheme.colors.primary,
     )
 }

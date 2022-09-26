@@ -45,10 +45,7 @@ fun GifSearchScreen() {
     )
 }
 
-@OptIn(
-    ExperimentalAnimationApi::class, ExperimentalLayoutApi::class,
-    ExperimentalComposeUiApi::class, ExperimentalFoundationApi::class
-)
+@OptIn(ExperimentalAnimationApi::class)
 @Composable
 private fun GifSearchUI(
     imageLoader: ImageLoader,

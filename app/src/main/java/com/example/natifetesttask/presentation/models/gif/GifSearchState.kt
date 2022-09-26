@@ -11,8 +11,8 @@ data class GifSearchState(
     val transitionInfo: TransitionInfo = TransitionInfo(),
 ) {
 
-    val currentIndex: Int
-        get() = items.indexOfFirst { it.id == transitionInfo.itemId }.coerceAtLeast(0)
+    val currentIndex: Int =
+        items.indexOfFirst { it.id == transitionInfo.itemId }.coerceAtLeast(0)
 }
 
 data class TransitionInfo(

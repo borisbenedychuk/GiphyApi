@@ -8,7 +8,6 @@ import com.example.natifetesttask.domain.model.gif.GifsPagesModel
 import com.example.natifetesttask.domain.repository.gif.GifRepository
 import com.example.natifetesttask.domain.utils.Result
 import com.example.natifetesttask.presentation.ui.gif.PAGE
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
@@ -32,47 +31,42 @@ class GifRepositoryImpl @Inject constructor(
 
     override suspend fun getPages(
         query: String,
-        currentPage: Int
-    ): Result<Flow<GifsPagesModel>> =
-        with(Dispatchers.Default) {
-            val queryInfo = cache.getQueryInfoEntity(query)
-            val result =
-                when {
-                    queryInfo == null -> initialLoad(query)
-                    currentPage == 0 -> refreshLoad(query, currentPage, queryInfo)
-                    else -> regularLoad(query, currentPage, queryInfo)
-                }
-            when (result) {
-                is Result.Error -> result
-                is Result.Success -> {
-                    val pages =
-                        List(3) {
-                            (currentPage - 1 + it).coerceAtLeast(0)
-                        }.distinct()
-                    Result.Success(
-                        cache.getGifs(query, pages).map {
-                            GifsPagesModel(
-                                isFinished = cache.getQueryInfoEntity(query)
-                                    ?.run { cachedPages == totalPages } ?: false,
-                                it.map { it.asGifModel() })
-                        }
-                    )
-                }
+        requestedPage: Int
+    ): Result<Flow<GifsPagesModel>> {
+        val queryInfo = cache.getQueryInfoEntity(query)
+        val result = when {
+            queryInfo == null -> initialLoad(query)
+            requestedPage == 0 -> refreshLoad(query, requestedPage, queryInfo)
+            else -> regularLoad(query, requestedPage, queryInfo)
+        }
+        return when (result) {
+            is Result.Error -> result
+            is Result.Success -> {
+                val pages = List(3) { i -> requestedPage - 1 + i }.filter { page -> page >= 0 }
+                Result.Success(
+                    cache.getGifs(query, pages).map { entities ->
+                        GifsPagesModel(
+                            isFinished = result.data,
+                            models = entities.map { e -> e.asGifModel() },
+                        )
+                    }
+                )
             }
         }
+    }
 
     private suspend fun refreshLoad(
         query: String,
         currentPage: Int,
         currentQueryInfoEntity: QueryInfoEntity,
-    ): Result<Unit> {
+    ): Result<Boolean> {
         val result = remote.getGifs(
             query = query,
             limit = 1,
             offset = 0,
         )
         if (result is Result.Success) {
-            val remoteResult = result.data.gifs?.firstOrNull()
+            val remoteResult = result.data.gifs.firstOrNull()
             val cacheResult = cache.getFirstGif(query)
             return when {
                 remoteResult == null || cacheResult == null ->
@@ -92,87 +86,76 @@ class GifRepositoryImpl @Inject constructor(
 
     private suspend fun initialLoad(
         query: String,
-    ): Result<Unit> {
+    ): Result<Boolean> {
         val result = remote.getGifs(
             query = query,
-            limit = PAGE * 3,
+            limit = PAGE * 2,
             offset = 0,
         )
         return handleResponse(
             result = result,
             query = query,
-            cachedPages = 3,
-            pageResolver = { index -> ((index + 1) / PAGE).coerceIn(0, 2) },
-            queryInfoTime = System.currentTimeMillis()
+            pageResolver = { index -> index / PAGE },
+            queryInfoTime = System.currentTimeMillis(),
+            cachePagesCount = 2,
         )
     }
 
     private suspend fun regularLoad(
         query: String,
-        currentPage: Int,
+        loadPage: Int,
         currentQueryInfo: QueryInfoEntity,
-    ): Result<Unit> {
-        val upperBound = currentPage + 2
-        val allPagesInCache = upperBound <= currentQueryInfo.cachedPages - 1
-        val pageInBounds = currentPage <= currentQueryInfo.totalPages - 1
-        return if (!allPagesInCache && pageInBounds) {
-            val limit =
-                (upperBound - currentQueryInfo.cachedPages + 1).coerceAtMost(
-                    currentQueryInfo.totalPages - 1
-                ) * PAGE
+    ): Result<Boolean> {
+        val allPagesInCache = loadPage <= currentQueryInfo.cachedPages - 1
+        return if (!allPagesInCache) {
             val offset = currentQueryInfo.cachedPages * PAGE
             val result = remote.getGifs(
                 query = query,
-                limit = limit,
+                limit = PAGE,
                 offset = offset,
             )
             handleResponse(
                 result = result,
                 query = query,
-                cachedPages = currentQueryInfo.cachedPages + limit / PAGE,
-                pageResolver = { currentQueryInfo.cachedPages + it / PAGE },
+                cachePagesCount = currentQueryInfo.cachedPages + 1,
+                pageResolver = { currentQueryInfo.cachedPages },
                 queryInfoTime = currentQueryInfo.lastQueryTime,
             )
         } else {
-            Result.Success(Unit)
+            Result.Success(currentQueryInfo.cachedPages == currentQueryInfo.totalPages)
         }
     }
 
     private suspend fun handleResponse(
         result: Result<GifDataResponse>,
         query: String,
-        cachedPages: Int,
+        cachePagesCount: Int,
         pageResolver: (index: Int) -> Int,
         queryInfoTime: Long,
-    ): Result<Unit> = when (result) {
-        is Result.Success -> {
-            result.data.let { data ->
+    ): Result<Boolean> =
+        when (result) {
+            is Result.Success -> {
                 val blackList = cache.getBlacklistIds()
-                data.pagination?.totalCount?.let { count ->
-                    val totalPages = count / PAGE + if (count % PAGE != 0) 1 else 0
-                    val newQueryInfoEntity = QueryInfoEntity(
-                        query = query,
-                        totalSize = count,
-                        totalPages = totalPages,
-                        cachedPages = cachedPages,
-                        lastQueryTime = queryInfoTime,
-                    )
-                    cache.saveQueryInfo(newQueryInfoEntity)
-                }
-                data.gifs?.let { gifs ->
-                    val entities = gifs
-                        .filterNotNull()
-                        .filter { it.id !in blackList }
-                        .mapIndexed { index, gif ->
-                            val gifPage = pageResolver(index)
-                            gif.asGifEntity(query, gifPage)
-                        }
-                    cache.saveGifs(entities)
-                }
-
+                val count = result.data.pagination.totalCount
+                val totalPages = count / PAGE + if (count % PAGE != 0) 1 else 0
+                val cachePages = if (cachePagesCount > totalPages) totalPages else cachePagesCount
+                val newQueryInfoEntity = QueryInfoEntity(
+                    query = query,
+                    totalSize = count,
+                    totalPages = totalPages,
+                    cachedPages = cachePages,
+                    lastQueryTime = queryInfoTime,
+                )
+                val entities = result.data.gifs
+                    .mapIndexed { index, gif ->
+                        val gifPage = pageResolver(index)
+                        gif.asGifEntity(query, gifPage)
+                    }
+                    .filter { it.id !in blackList }
+                cache.saveGifs(entities)
+                cache.saveQueryInfo(newQueryInfoEntity)
+                Result.Success(cachePages == totalPages)
             }
-            Result.Success(Unit)
+            is Result.Error -> result
         }
-        is Result.Error -> result
-    }
 }

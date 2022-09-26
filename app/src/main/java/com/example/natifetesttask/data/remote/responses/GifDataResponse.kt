@@ -7,48 +7,48 @@ import kotlinx.serialization.Serializable
 @Serializable
 class GifDataResponse(
     @SerialName("data")
-    val gifs: List<GifResponse?>? = null,
+    val gifs: List<GifResponse>,
     @SerialName("pagination")
-    val pagination: Pagination? = null,
+    val pagination: Pagination,
 ) {
 
     @Serializable
     data class Pagination(
         @SerialName("total_count")
-        val totalCount: Int? = null,
+        val totalCount: Int,
     )
 
     @Serializable
     data class GifResponse(
         @SerialName("id")
-        val id: String? = null,
+        val id: String,
         @SerialName("title")
-        val title: String? = null,
+        val title: String,
         @SerialName("images")
-        val images: Images? = null,
+        val images: Images,
     ) {
 
         @Serializable
         data class Images(
             @SerialName("original")
-            val original: UrlHolder? = null,
+            val original: UrlHolder,
             @SerialName("fixed_height_downsampled")
-            val small: UrlHolder? = null,
+            val small: UrlHolder,
         )
 
         @Serializable
         data class UrlHolder(
             @SerialName("url")
-            val url: String? = null
+            val url: String,
         )
 
         fun asGifEntity(query: String, page: Int) = GifEntity(
-            id = id.orEmpty(),
-            title = title.orEmpty(),
+            id = id,
+            title = title,
             query = query,
             page = page,
-            originalUrl = images?.original?.url.orEmpty(),
-            smallUrl = images?.small?.url.orEmpty(),
+            originalUrl = images.original.url,
+            smallUrl = images.small.url,
         )
     }
 }

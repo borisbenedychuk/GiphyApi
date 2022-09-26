@@ -1,26 +1,25 @@
 package com.example.natifetesttask.presentation.ui.gif.pager
 
-import android.util.Log
-import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
-import androidx.compose.runtime.*
+import androidx.compose.material.MaterialTheme
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.unit.dp
 import coil.ImageLoader
 import coil.compose.AsyncImage
 import coil.compose.rememberAsyncImagePainter
 import com.example.natifetesttask.R
-import com.example.natifetesttask.presentation.models.gif.BoundSignal
 import com.example.natifetesttask.presentation.models.gif.GifItem
 import com.example.natifetesttask.presentation.utils.compose.rememberState
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.PagerState
 import com.google.accompanist.pager.rememberPagerState
-import kotlinx.coroutines.flow.dropWhile
 
 @OptIn(ExperimentalPagerApi::class)
 @Composable
@@ -29,18 +28,19 @@ fun GifSearchPagerPortrait(
     imageLoader: ImageLoader,
     onDeleteItem: (String) -> Unit,
     pagerState: PagerState,
+    deleteAnimationProgress: Float,
 ) {
-
     val currentItem = items[pagerState.currentPage]
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color.Black),
+            .background(MaterialTheme.colors.background),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         Spacer(modifier = Modifier.fillMaxHeight(0.1f))
         var isLoading by rememberState(false)
         GifPager(
+            deleteAnimationProgress = deleteAnimationProgress,
             modifier = Modifier.fillMaxWidth(),
             items = items,
             imageLoader = imageLoader,
@@ -64,6 +64,7 @@ fun GifPager(
     onLoading: () -> Unit,
     onFinish: () -> Unit,
     modifier: Modifier = Modifier,
+    deleteAnimationProgress: Float,
     pagerState: PagerState = rememberPagerState(),
 ) {
     HorizontalPager(
@@ -84,6 +85,10 @@ fun GifPager(
             ),
             modifier = Modifier
                 .fillMaxWidth()
+                .graphicsLayer {
+                    val alpha = if (currentPage == count) 1f - deleteAnimationProgress else 1f
+                    this.alpha = alpha
+                }
                 .height(400.dp),
             contentDescription = null,
         )

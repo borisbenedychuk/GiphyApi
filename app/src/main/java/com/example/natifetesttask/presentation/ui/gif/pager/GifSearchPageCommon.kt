@@ -1,7 +1,7 @@
 package com.example.natifetesttask.presentation.ui.gif.pager
 
-import android.util.Log
 import androidx.activity.compose.BackHandler
+import androidx.compose.animation.core.Animatable
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -12,7 +12,6 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.font.FontWeight
@@ -27,6 +26,7 @@ import com.example.natifetesttask.presentation.ui.gif.DeleteIcon
 import com.example.natifetesttask.presentation.utils.compose.isInLandScape
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.PagerState
+import kotlinx.coroutines.launch
 import kotlin.math.abs
 
 @OptIn(ExperimentalPagerApi::class)
@@ -48,30 +48,37 @@ fun GifPager(
             pagerState.run {
                 when {
                     pageCount == 0 -> BoundSignal.NONE
-                    pageCount - currentPage <= 1 -> {
-                        BoundSignal.BOTTOM_REACHED
-                    }
-                    currentPage - 1 <= 1 -> {
-                        BoundSignal.TOP_REACHED
-                    }
+                    pageCount - currentPage <= 1 -> BoundSignal.BOTTOM_REACHED
+                    currentPage - 1 <= 1 -> BoundSignal.TOP_REACHED
                     else -> BoundSignal.NONE
                 }
             }
+        }
+    }
+    val coroutineScope = rememberCoroutineScope()
+    val deleteAnimation = remember { Animatable(0f) }
+    val onDeleteItemImpl: (String) -> Unit = { id ->
+        coroutineScope.launch {
+            deleteAnimation.animateTo(1f)
+            onDeleteItem(id)
+            deleteAnimation.animateTo(0f)
         }
     }
     if (isInLandScape()) {
         GifSearchPagerLandscape(
             items = items,
             imageLoader = imageLoader,
-            onDeleteItem = onDeleteItem,
+            onDeleteItem = onDeleteItemImpl,
             pagerState = pagerState,
+            deleteAnimationProgress = deleteAnimation.value,
         )
     } else {
         GifSearchPagerPortrait(
             items = items,
             imageLoader = imageLoader,
-            onDeleteItem = onDeleteItem,
-            pagerState = pagerState
+            onDeleteItem = onDeleteItemImpl,
+            pagerState = pagerState,
+            deleteAnimationProgress = deleteAnimation.value,
         )
     }
     BackHandler(onBack = onBackPressed)
@@ -100,7 +107,7 @@ fun GifPagerItemInfo(
             fontSize = 20.sp,
             fontWeight = FontWeight.Bold
         ),
-        color = Color.White,
+        color = MaterialTheme.colors.primary,
         modifier = Modifier
             .padding(top = 30.dp)
             .padding(horizontal = 20.dp)
@@ -125,7 +132,7 @@ fun GifPagerItemInfo(
                 .padding(top = 30.dp)
                 .size(40.dp),
             strokeWidth = 6.dp,
-            color = Color.White,
+            color = MaterialTheme.colors.primary,
         )
     }
 }
