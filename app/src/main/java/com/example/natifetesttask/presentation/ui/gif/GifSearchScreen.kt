@@ -1,10 +1,9 @@
 package com.example.natifetesttask.presentation.ui.gif
 
 import androidx.compose.animation.*
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.*
+import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.OutlinedTextField
 import androidx.compose.material.Text
@@ -110,6 +109,7 @@ private fun GifSearchUI(
                         onBoundReached = { signal -> onNewAction(BoundsReached(signal)) },
                         onItemClick = { info -> onNewAction(NavigateToPager(info)) },
                         showFooter = state.showFooter,
+                        errorMsg = state.errorMsg,
                     )
                 } else {
                     Spacer(Modifier.weight(1f))
@@ -121,6 +121,21 @@ private fun GifSearchUI(
                         textAlign = TextAlign.Center,
                     )
                     Spacer(Modifier.weight(1f))
+                }
+            }
+            AnimatedVisibility(state.loading, enter = fadeIn(), exit = fadeOut()) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(MaterialTheme.colors.surface.copy(alpha = 0.8f))
+                ) {
+                    CircularProgressIndicator(
+                        modifier = Modifier
+                            .size(50.dp)
+                            .align(Alignment.Center),
+                        color = MaterialTheme.colors.primary,
+                        strokeWidth = 8.dp
+                    )
                 }
             }
             LaunchedEffect(Unit) {

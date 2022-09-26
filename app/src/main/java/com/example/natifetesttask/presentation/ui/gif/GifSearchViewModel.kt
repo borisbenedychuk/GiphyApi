@@ -54,10 +54,15 @@ class GifSearchViewModel @Inject constructor(
     }
 
     private fun queryGifs(query: String) {
-        if (query != gifSearchState.query) {
-            currentJob?.cancel()
-            gifSearchState = gifSearchState.copy(query = query)
-            observePages(query, 0)
+        currentJob?.cancel()
+        when {
+            query.isEmpty() -> {
+                gifSearchState = gifSearchState.copy(query = query, loading = false)
+            }
+            query != gifSearchState.query -> {
+                gifSearchState = gifSearchState.copy(query = query, loading = true)
+                observePages(query, 0)
+            }
         }
     }
 
@@ -101,11 +106,14 @@ class GifSearchViewModel @Inject constructor(
                             query = gifSearchState.query,
                             items = pagesModel.models.map { it.asItem() },
                             showFooter = !pagesModel.isFinished,
+                            loading = false
                         )
                     }
                 }
                 is Result.Error -> {
-
+                    gifSearchState = gifSearchState.copy(
+                        errorMsg = result.msg.orEmpty()
+                    )
                 }
             }
         }

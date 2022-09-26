@@ -50,7 +50,9 @@ fun LazyListScope.gifItems(
     imageLoader: ImageLoader,
     onItemClick: (Int) -> Unit,
     onDeleteItem: (String) -> Unit,
+    onRetryClick: () -> Unit,
     showFooter: Boolean,
+    errorMsg: String? = null,
 ) {
     itemsIndexed(
         items = items,
@@ -67,13 +69,22 @@ fun LazyListScope.gifItems(
     }
     if (showFooter) {
         item {
-            CircularProgressIndicator(
-                modifier = Modifier
-                    .padding(vertical = 50.dp)
-                    .size(40.dp),
-                color = MaterialTheme.colors.primary,
-                strokeWidth = 6.dp,
-            )
+            if (errorMsg == null) {
+                CircularProgressIndicator(
+                    modifier = Modifier
+                        .padding(vertical = 50.dp)
+                        .size(40.dp),
+                    color = MaterialTheme.colors.primary,
+                    strokeWidth = 6.dp,
+                )
+            } else {
+                RetryIcon(
+                    modifier = Modifier
+                        .padding(vertical = 50.dp)
+                        .size(80.dp),
+                    onRetryClick = onRetryClick,
+                )
+            }
         }
     }
 }

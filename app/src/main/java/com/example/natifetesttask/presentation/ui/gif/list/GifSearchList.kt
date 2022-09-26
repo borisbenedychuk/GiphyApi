@@ -19,6 +19,7 @@ import com.example.natifetesttask.presentation.models.gif.TransitionInfo
 fun GifSearchList(
     items: List<GifItem>,
     showFooter: Boolean,
+    errorMsg: String?,
     imageLoader: ImageLoader,
     onDeleteItem: (String) -> Unit,
     onBoundReached: (BoundSignal) -> Unit,
@@ -59,6 +60,8 @@ fun GifSearchList(
             },
             onDeleteItem = onDeleteItem,
             showFooter = showFooter,
+            errorMsg = errorMsg,
+            onRetryClick = { onBoundReached(BoundSignal.BOTTOM_REACHED) },
         )
     }
     if (configuration == Configuration.ORIENTATION_LANDSCAPE) {
