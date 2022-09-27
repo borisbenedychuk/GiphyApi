@@ -40,8 +40,8 @@ fun GifSearchPagerPortrait(
             .fillMaxSize()
             .background(MaterialTheme.colors.background),
         horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.SpaceEvenly,
     ) {
-        Spacer(modifier = Modifier.fillMaxHeight(0.1f))
         var loadingState by rememberState(LOADING)
         var retryHash by rememberState(0)
         GifPager(

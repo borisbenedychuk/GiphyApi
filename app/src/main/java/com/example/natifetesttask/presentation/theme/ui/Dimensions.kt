@@ -26,6 +26,7 @@ class PortraitDimensions : Dimensions() {
     override val cardDeleteButtonWidthPercent: Float = 0.15f
     override val footerProgressBarPadding: Dp = 10.dp
     override val footerProgressBarStrokeWidth: Dp = 6.dp
+    override val itemsPaddingGifPagerInfo: Dp = 10.dp
 }
 
 class LandscapeDimensions : Dimensions() {
@@ -38,6 +39,7 @@ class LandscapeDimensions : Dimensions() {
     override val cardDeleteButtonWidthPercent: Float = 0.1f
     override val footerProgressBarPadding: Dp = 6.dp
     override val footerProgressBarStrokeWidth: Dp = 4.dp
+    override val itemsPaddingGifPagerInfo: Dp = 30.dp
 }
 
 abstract class Dimensions {
@@ -50,5 +52,6 @@ abstract class Dimensions {
     abstract val cardDeleteButtonWidthPercent: Float
     abstract val footerProgressBarPadding: Dp
     abstract val footerProgressBarStrokeWidth: Dp
+    abstract val itemsPaddingGifPagerInfo: Dp
 }
 

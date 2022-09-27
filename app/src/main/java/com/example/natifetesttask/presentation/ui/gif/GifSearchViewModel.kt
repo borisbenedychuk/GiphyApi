@@ -45,7 +45,7 @@ class GifSearchViewModel @Inject constructor(
 
     private fun updateCurrentItemId(id: String) {
         gifSearchState = gifSearchState.copy(
-            transitionInfo = gifSearchState.transitionInfo.copy(itemId = id)
+            listPositionInfo = gifSearchState.listPositionInfo.copy(itemId = id)
         )
     }
 
@@ -53,8 +53,8 @@ class GifSearchViewModel @Inject constructor(
         gifSearchState = gifSearchState.copy(isDetailsScreen = false)
     }
 
-    private fun navigateToDetails(info: TransitionInfo) {
-        gifSearchState = gifSearchState.copy(transitionInfo = info, isDetailsScreen = true)
+    private fun navigateToDetails(info: ListPositionInfo) {
+        gifSearchState = gifSearchState.copy(listPositionInfo = info, isDetailsScreen = true)
     }
 
     private fun queryGifs(query: String) {
@@ -64,7 +64,7 @@ class GifSearchViewModel @Inject constructor(
                 gifSearchState = gifSearchState.copy(query = query, loading = false)
             }
             query != gifSearchState.query -> {
-                gifSearchState = gifSearchState.copy(query = query)
+                gifSearchState = gifSearchState.copy(query = query, loading = true)
                 observePages(query, 0)
             }
         }
@@ -77,7 +77,7 @@ class GifSearchViewModel @Inject constructor(
             }
             val newId = newItem?.id.orEmpty()
             gifSearchState = gifSearchState.copy(
-                transitionInfo = gifSearchState.transitionInfo.copy(
+                listPositionInfo = gifSearchState.listPositionInfo.copy(
                     itemId = newId,
                 )
             )
@@ -102,7 +102,6 @@ class GifSearchViewModel @Inject constructor(
         currentJob?.cancel()
         currentJob = viewModelScope.launch {
             delay(300)
-            gifSearchState = gifSearchState.copy(loading = true)
             when (val result = getPagesUseCase(query, requestPage)) {
                 is Result.Success -> {
                     currentPage = if (requestPage == 0) 1 else requestPage

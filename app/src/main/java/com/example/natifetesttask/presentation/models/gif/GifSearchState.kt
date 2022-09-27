@@ -8,14 +8,14 @@ data class GifSearchState(
     val page: Int = 0,
     val showFooter: Boolean = false,
     val isDetailsScreen: Boolean = false,
-    val transitionInfo: TransitionInfo = TransitionInfo(),
+    val listPositionInfo: ListPositionInfo = ListPositionInfo(),
 ) {
 
     val currentIndex: Int =
-        items.indexOfFirst { it.id == transitionInfo.itemId }.coerceAtLeast(0)
+        items.indexOfFirst { it.id == listPositionInfo.itemId }.coerceAtLeast(0)
 }
 
-data class TransitionInfo(
+data class ListPositionInfo(
     val itemId: String = "",
     val itemOffset: Int = 0,
 )

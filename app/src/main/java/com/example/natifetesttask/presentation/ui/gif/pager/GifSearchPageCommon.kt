@@ -3,7 +3,6 @@ package com.example.natifetesttask.presentation.ui.gif.pager
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.core.Animatable
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.CircularProgressIndicator
@@ -13,7 +12,6 @@ import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.graphicsLayer
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -23,6 +21,7 @@ import coil.ImageLoader
 import com.example.natifetesttask.presentation.models.gif.BoundSignal
 import com.example.natifetesttask.presentation.models.gif.GifItem
 import com.example.natifetesttask.presentation.models.gif.ImageState
+import com.example.natifetesttask.presentation.theme.ui.NatifeTheme
 import com.example.natifetesttask.presentation.ui.gif.DeleteIcon
 import com.example.natifetesttask.presentation.ui.gif.list.RetryIcon
 import com.example.natifetesttask.presentation.utils.compose.isInLandScape
@@ -112,14 +111,12 @@ fun GifPagerItemInfo(
         ),
         color = MaterialTheme.colors.primary,
         modifier = Modifier
-            .padding(top = 30.dp)
             .padding(horizontal = 20.dp)
-            .height(LocalDensity.current.run { 20.sp.toDp() * 2.5f })
             .graphicsLayer {
                 alpha = 1f - 2 * abs(pagerState.currentPageOffset)
             },
         textAlign = TextAlign.Center,
-        maxLines = 2,
+        maxLines = 1,
         overflow = TextOverflow.Ellipsis,
     )
     when (loadingState) {
@@ -135,18 +132,19 @@ fun GifPagerItemInfo(
                 item = currentItem,
                 onDeleteItem = onDeleteItem,
                 modifier = Modifier
-                    .fillMaxWidth(0.15f)
-                    .padding(top = 30.dp)
+                    .padding(NatifeTheme.dimensions.itemsPaddingGifPagerInfo)
+                    .size(50.dp)
             )
         }
     }
-    if (loadingState == ImageState.LOADING) {
-        CircularProgressIndicator(
-            modifier = Modifier
-                .padding(top = 30.dp)
-                .size(40.dp),
-            strokeWidth = 6.dp,
-            color = MaterialTheme.colors.primary,
-        )
-    }
+    CircularProgressIndicator(
+        modifier = Modifier
+            .graphicsLayer {
+                alpha = if (loadingState == ImageState.LOADING) 1f else 0f
+            }
+            .padding(NatifeTheme.dimensions.itemsPaddingGifPagerInfo)
+            .size(40.dp),
+        strokeWidth = 6.dp,
+        color = MaterialTheme.colors.primary,
+    )
 }

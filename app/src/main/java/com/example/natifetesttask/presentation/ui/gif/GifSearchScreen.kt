@@ -12,6 +12,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -82,6 +83,7 @@ private fun GifSearchUI(
                 modifier = Modifier.fillMaxSize(),
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
+
                 OutlinedTextField(
                     modifier = Modifier
                         .padding(20.dp)
@@ -91,48 +93,58 @@ private fun GifSearchUI(
                         onNewAction(NewQuery(text))
                     },
                 )
-                if (state.query.isNotBlank()) {
-                    GifSearchList(
-                        items = state.items,
-                        initialPage = initialIndex,
-                        initialOffset = -state.transitionInfo.itemOffset,
-                        imageLoader = imageLoader,
-                        onDeleteItem = { id ->
-                            onNewAction(DeleteItem(id))
-                            val item = state.items.find { it.id == id } ?: return@GifSearchList
-                            scope.launch { imageLoader.deleteGifCoilCache(item) }
-                        },
-                        onBoundReached = { signal -> onNewAction(BoundsReached(signal)) },
-                        onItemClick = { info -> onNewAction(NavigateToPager(info)) },
-                        showFooter = state.showFooter,
-                        errorMsg = state.errorMsg,
-                        onRetryClick = { onNewAction(RetryLoad) }
-                    )
-                } else {
-                    Spacer(Modifier.weight(1f))
-                    Text(
-                        text = "Start typing",
-                        color = MaterialTheme.colors.primary,
-                        fontWeight = FontWeight.Bold,
-                        fontSize = 30.sp,
-                        textAlign = TextAlign.Center,
-                    )
-                    Spacer(Modifier.weight(1f))
-                }
-            }
-            AnimatedVisibility(state.loading, enter = fadeIn(), exit = fadeOut()) {
                 Box(
                     modifier = Modifier
-                        .fillMaxSize()
-                        .background(MaterialTheme.colors.surface.copy(alpha = 0.8f))
+                        .weight(1f)
+                        .fillMaxWidth()
                 ) {
-                    CircularProgressIndicator(
-                        modifier = Modifier
-                            .size(50.dp)
-                            .align(Alignment.Center),
-                        color = MaterialTheme.colors.primary,
-                        strokeWidth = 8.dp
-                    )
+                    if (state.query.isNotBlank()) {
+                        GifSearchList(
+                            items = state.items,
+                            initialPage = initialIndex,
+                            initialOffset = -state.listPositionInfo.itemOffset,
+                            imageLoader = imageLoader,
+                            onDeleteItem = { id ->
+                                onNewAction(DeleteItem(id))
+                                val item = state.items.find { it.id == id } ?: return@GifSearchList
+                                scope.launch { imageLoader.deleteGifCoilCache(item) }
+                            },
+                            onBoundReached = { signal -> onNewAction(BoundsReached(signal)) },
+                            onItemClick = { info -> onNewAction(NavigateToPager(info)) },
+                            showFooter = state.showFooter,
+                            errorMsg = state.errorMsg,
+                            onRetryClick = { onNewAction(RetryLoad) }
+                        )
+                    } else {
+                        Text(
+                            text = "Start typing",
+                            color = MaterialTheme.colors.primary,
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 30.sp,
+                            textAlign = TextAlign.Center,
+                            modifier = Modifier.align(Alignment.Center)
+                        )
+                    }
+                    androidx.compose.animation.AnimatedVisibility(
+                        state.loading,
+                        enter = fadeIn(),
+                        exit = fadeOut()
+                    ) {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .background(MaterialTheme.colors.surface.copy(alpha = 0.8f))
+                                .pointerInput(Unit) { },
+                        ) {
+                            CircularProgressIndicator(
+                                modifier = Modifier
+                                    .size(50.dp)
+                                    .align(Alignment.Center),
+                                color = MaterialTheme.colors.primary,
+                                strokeWidth = 8.dp
+                            )
+                        }
+                    }
                 }
             }
         }

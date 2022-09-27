@@ -13,7 +13,7 @@ import androidx.compose.ui.unit.dp
 import coil.ImageLoader
 import com.example.natifetesttask.presentation.models.gif.BoundSignal
 import com.example.natifetesttask.presentation.models.gif.GifItem
-import com.example.natifetesttask.presentation.models.gif.TransitionInfo
+import com.example.natifetesttask.presentation.models.gif.ListPositionInfo
 
 @Composable
 fun GifSearchList(
@@ -24,7 +24,7 @@ fun GifSearchList(
     onDeleteItem: (String) -> Unit,
     onBoundReached: (BoundSignal) -> Unit,
     onRetryClick: () -> Unit,
-    onItemClick: (TransitionInfo) -> Unit,
+    onItemClick: (ListPositionInfo) -> Unit,
     modifier: Modifier = Modifier,
     initialPage: Int = 0,
     initialOffset: Int = 0,
@@ -52,7 +52,7 @@ fun GifSearchList(
             imageLoader = imageLoader,
             onItemClick = { index ->
                 onItemClick(
-                    TransitionInfo(
+                    ListPositionInfo(
                         itemId = items[index].id,
                         itemOffset = lazyListState.layoutInfo.visibleItemsInfo.find { it.index == index }?.offset
                             ?: 0,
