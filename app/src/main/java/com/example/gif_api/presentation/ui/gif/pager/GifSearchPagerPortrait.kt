@@ -15,6 +15,7 @@ import coil.ImageLoader
 import coil.compose.AsyncImage
 import coil.compose.rememberAsyncImagePainter
 import coil.request.ImageRequest
+import com.example.gif_api.R
 import com.example.gif_api.presentation.models.gif.GifItem
 import com.example.gif_api.presentation.models.gif.ImageState
 import com.example.gif_api.presentation.models.gif.ImageState.*

@@ -1,4 +1,4 @@
-rootProject.name = "NatifeTestTask"
+rootProject.name = "GiphyApi"
 include(":app")
 
 pluginManagement {

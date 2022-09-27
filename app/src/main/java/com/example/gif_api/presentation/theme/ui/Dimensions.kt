@@ -8,7 +8,7 @@ import androidx.compose.ui.unit.dp
 
 val LocalDimensions = staticCompositionLocalOf<Dimensions> { PortraitDimensions() }
 
-object NatifeTheme {
+object GifApiTheme {
 
     val dimensions
         @Composable

@@ -21,7 +21,7 @@ import coil.ImageLoader
 import com.example.gif_api.presentation.models.gif.BoundSignal
 import com.example.gif_api.presentation.models.gif.GifItem
 import com.example.gif_api.presentation.models.gif.ImageState
-import com.example.gif_api.presentation.theme.ui.NatifeTheme
+import com.example.gif_api.presentation.theme.ui.GifApiTheme
 import com.example.gif_api.presentation.ui.gif.DeleteIcon
 import com.example.gif_api.presentation.ui.gif.list.RetryIcon
 import com.example.gif_api.presentation.utils.compose.isInLandScape
@@ -129,7 +129,7 @@ fun GifPagerItemInfo(
                 item = currentItem,
                 onDeleteItem = onDeleteItem,
                 modifier = Modifier
-                    .padding(NatifeTheme.dimensions.itemsPaddingGifPagerInfo)
+                    .padding(GifApiTheme.dimensions.itemsPaddingGifPagerInfo)
                     .size(50.dp)
             )
         }
@@ -139,7 +139,7 @@ fun GifPagerItemInfo(
             .graphicsLayer {
                 alpha = if (loadingState == ImageState.LOADING) 1f else 0f
             }
-            .padding(NatifeTheme.dimensions.itemsPaddingGifPagerInfo)
+            .padding(GifApiTheme.dimensions.itemsPaddingGifPagerInfo)
             .size(40.dp),
         strokeWidth = 6.dp,
         color = MaterialTheme.colors.primary,

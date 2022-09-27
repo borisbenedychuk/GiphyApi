@@ -38,7 +38,7 @@ import coil.request.ImageRequest
 import com.example.gif_api.R
 import com.example.gif_api.presentation.models.gif.GifItem
 import com.example.gif_api.presentation.models.gif.ImageState
-import com.example.gif_api.presentation.theme.ui.NatifeTheme
+import com.example.gif_api.presentation.theme.ui.GifApiTheme
 import com.example.gif_api.presentation.ui.gif.DeleteIcon
 import com.example.gif_api.presentation.utils.compose.fillMaxSmallestWidth
 import com.example.gif_api.presentation.utils.compose.rememberInteractionSource
@@ -118,8 +118,8 @@ fun GifSearchColumnItem(
             ),
             contentScale = ContentScale.Crop,
             modifier = Modifier
-                .fillMaxSmallestWidth(NatifeTheme.dimensions.cardImageWidthPercent)
-                .clip(RoundedCornerShape(NatifeTheme.dimensions.cardImageCornerRadius))
+                .fillMaxSmallestWidth(GifApiTheme.dimensions.cardImageWidthPercent)
+                .clip(RoundedCornerShape(GifApiTheme.dimensions.cardImageCornerRadius))
                 .aspectRatio(1f)
                 .clickable(
                     enabled = state == ImageState.SUCCESS,
@@ -134,14 +134,14 @@ fun GifSearchColumnItem(
                 ListLoadingIndicator(
                     modifier = Modifier
                         .align(Alignment.Center)
-                        .fillMaxSmallestWidth(NatifeTheme.dimensions.cardProgressBarWidthPercent)
+                        .fillMaxSmallestWidth(GifApiTheme.dimensions.cardProgressBarWidthPercent)
                 )
             }
             ImageState.ERROR -> {
                 RetryIcon(
                     modifier = Modifier
                         .align(Alignment.Center)
-                        .fillMaxSmallestWidth(NatifeTheme.dimensions.cardRetryButtonWidthPercent),
+                        .fillMaxSmallestWidth(GifApiTheme.dimensions.cardRetryButtonWidthPercent),
                     onRetryClick = { retryHash++ },
                 )
             }
@@ -151,7 +151,7 @@ fun GifSearchColumnItem(
                     onDeleteItem = onDeleteItem,
                     modifier = Modifier
                         .align(Alignment.TopEnd)
-                        .padding(NatifeTheme.dimensions.cardDeleteButtonPadding)
+                        .padding(GifApiTheme.dimensions.cardDeleteButtonPadding)
                 )
             }
         }
@@ -190,10 +190,10 @@ fun ListLoadingIndicator(
     CircularProgressIndicator(
         modifier = Modifier
             .background(Color.Black.copy(alpha = 0.4f), RoundedCornerShape(3.dp))
-            .padding(NatifeTheme.dimensions.footerProgressBarPadding)
+            .padding(GifApiTheme.dimensions.footerProgressBarPadding)
             .then(modifier)
             .aspectRatio(1f),
-        strokeWidth = NatifeTheme.dimensions.footerProgressBarStrokeWidth,
+        strokeWidth = GifApiTheme.dimensions.footerProgressBarStrokeWidth,
         color = MaterialTheme.colors.primary,
     )
 }

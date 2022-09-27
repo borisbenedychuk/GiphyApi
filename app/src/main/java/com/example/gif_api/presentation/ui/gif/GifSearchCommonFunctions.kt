@@ -18,7 +18,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.unit.dp
 import com.example.gif_api.presentation.models.gif.GifItem
-import com.example.gif_api.presentation.theme.ui.NatifeTheme
+import com.example.gif_api.presentation.theme.ui.GifApiTheme
 import com.example.gif_api.presentation.utils.compose.fillMaxSmallestWidth
 
 @Composable
@@ -32,7 +32,7 @@ fun DeleteIcon(
         contentDescription = "delete gif",
         tint = MaterialTheme.colors.error,
         modifier = modifier
-            .fillMaxSmallestWidth(NatifeTheme.dimensions.cardDeleteButtonWidthPercent)
+            .fillMaxSmallestWidth(GifApiTheme.dimensions.cardDeleteButtonWidthPercent)
             .aspectRatio(1f)
             .shadow(5.dp, CircleShape)
             .clickable(
@@ -43,6 +43,6 @@ fun DeleteIcon(
             )
             .background(color = MaterialTheme.colors.surface, shape = CircleShape)
             .clip(CircleShape)
-            .padding(NatifeTheme.dimensions.cardDeleteButtonIconPadding),
+            .padding(GifApiTheme.dimensions.cardDeleteButtonIconPadding),
     )
 }
