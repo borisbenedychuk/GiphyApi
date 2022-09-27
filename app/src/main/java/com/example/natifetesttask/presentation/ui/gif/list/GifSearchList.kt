@@ -1,6 +1,5 @@
 package com.example.natifetesttask.presentation.ui.gif.list
 
-import android.content.res.Configuration
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -8,12 +7,12 @@ import androidx.compose.foundation.lazy.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.unit.dp
 import coil.ImageLoader
 import com.example.natifetesttask.presentation.models.gif.BoundSignal
 import com.example.natifetesttask.presentation.models.gif.GifItem
 import com.example.natifetesttask.presentation.models.gif.ListPositionInfo
+import com.example.natifetesttask.presentation.utils.compose.isInLandScape
 
 @Composable
 fun GifSearchList(
@@ -45,7 +44,6 @@ fun GifSearchList(
             }
         }
     }
-    val configuration = LocalConfiguration.current.orientation
     val lazyListScopeBody: LazyListScope.() -> Unit = {
         gifItems(
             items = items,
@@ -65,7 +63,7 @@ fun GifSearchList(
             onRetryClick = onRetryClick,
         )
     }
-    if (configuration == Configuration.ORIENTATION_LANDSCAPE) {
+    if (isInLandScape()) {
         LazyRow(
             state = lazyListState,
             modifier = modifier.padding(vertical = 20.dp),

@@ -87,10 +87,7 @@ fun GifSearchPager(
         onPageScrolled(pagerState.currentPage)
     }
     LaunchedEffect(boundSignal) {
-        if (boundSignal.isBoundReached) {
-
-            onBoundReached(boundSignal)
-        }
+        if (boundSignal.isBoundReached) onBoundReached(boundSignal)
     }
 }
 

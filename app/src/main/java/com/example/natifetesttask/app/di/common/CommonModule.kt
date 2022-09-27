@@ -47,7 +47,6 @@ class CommonModule {
         Json {
             ignoreUnknownKeys = true
             isLenient = true
-            coerceInputValues = true
         }
 
     @Provides

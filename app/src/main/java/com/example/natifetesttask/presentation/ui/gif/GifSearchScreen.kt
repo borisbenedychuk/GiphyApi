@@ -27,6 +27,8 @@ import com.example.natifetesttask.presentation.models.gif.GifItem
 import com.example.natifetesttask.presentation.models.gif.GifSearchAction
 import com.example.natifetesttask.presentation.models.gif.GifSearchAction.*
 import com.example.natifetesttask.presentation.models.gif.GifSearchState
+import com.example.natifetesttask.presentation.ui.gif.di.DaggerGifSearchComponent
+import com.example.natifetesttask.presentation.ui.gif.di.GifSearchComponent
 import com.example.natifetesttask.presentation.ui.gif.list.GifSearchList
 import com.example.natifetesttask.presentation.ui.gif.pager.GifSearchPager
 import com.example.natifetesttask.presentation.utils.compose.fillMaxSmallestWidth
