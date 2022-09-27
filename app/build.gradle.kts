@@ -10,7 +10,7 @@ android {
     compileSdk = 33
 
     defaultConfig {
-        applicationId = "com.example.natifetesttask"
+        applicationId = "com.example.gif_api"
         minSdk = 21
         targetSdk = 33
         buildConfigField("String", "API_KEY", "\"${property("API_KEY")}\"")

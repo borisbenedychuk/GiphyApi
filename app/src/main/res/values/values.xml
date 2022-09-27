@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">NatifeTestTask</string>
+    <string name="app_name">GifApi</string>
 
     <style name="Theme" parent="android:Theme.Material.Light.NoActionBar" />
 </resources>
