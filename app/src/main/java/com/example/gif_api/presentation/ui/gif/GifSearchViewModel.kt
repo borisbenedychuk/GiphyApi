@@ -6,7 +6,7 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.gif_api.domain.usecase.gif.AddToBlacklistUseCase
-import com.example.gif_api.domain.usecase.gif.GetPagesUseCase
+import com.example.gif_api.domain.usecase.gif.Pager
 import com.example.gif_api.domain.utils.Result
 import com.example.gif_api.presentation.models.gif.*
 import com.example.gif_api.presentation.models.gif.GifSearchAction.*
@@ -16,7 +16,7 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 class GifSearchViewModel @Inject constructor(
-    private val getPagesUseCase: GetPagesUseCase,
+    private val pager: Pager,
     private val addToBlacklistUseCase: AddToBlacklistUseCase,
 ) : ViewModel() {
 
@@ -25,6 +25,14 @@ class GifSearchViewModel @Inject constructor(
 
     private var currentJob: Job? = null
     private var currentPage = 1
+
+    init {
+        viewModelScope.launch {
+            pager.pagesFlow.collect {
+                gifSearchState = gifSearchState.copy(items = it.map { model -> model.asItem() })
+            }
+        }
+    }
 
     fun handleAction(action: GifSearchAction) {
         when (action) {
@@ -65,7 +73,7 @@ class GifSearchViewModel @Inject constructor(
             }
             query != gifSearchState.query -> {
                 gifSearchState = gifSearchState.copy(query = query, loading = true)
-                observePages(query, 0)
+                requestPages(query, 0)
             }
         }
     }
@@ -92,27 +100,20 @@ class GifSearchViewModel @Inject constructor(
             signal == BoundSignal.TOP_REACHED && currentPage > 1 -> currentPage - 1
             else -> return
         }
-        observePages(query, requestPage)
+        requestPages(query, requestPage)
     }
 
-    private fun observePages(
+    private fun requestPages(
         query: String,
         requestPage: Int,
     ) {
         currentJob?.cancel()
         currentJob = viewModelScope.launch {
             delay(300)
-            when (val result = getPagesUseCase(query, requestPage)) {
+            when (val result = pager.newPages(query, requestPage)) {
                 is Result.Success -> {
                     currentPage = if (requestPage == 0) 1 else requestPage
-                    result.data.collect { pagesModel ->
-                        gifSearchState = gifSearchState.copy(
-                            query = gifSearchState.query,
-                            items = pagesModel.models.map { it.asItem() },
-                            showFooter = !pagesModel.isFinished,
-                            loading = false,
-                        )
-                    }
+                    gifSearchState = gifSearchState.copy(showFooter = result.data, loading = false)
                 }
                 is Result.Error -> {
                     gifSearchState = gifSearchState.copy(
