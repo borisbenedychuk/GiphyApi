@@ -5,7 +5,6 @@ data class GifSearchState(
     val errorMsg: String? = null,
     val loading: Boolean = false,
     val query: String = "",
-    val page: Int = 0,
     val showFooter: Boolean = false,
     val isDetailsScreen: Boolean = false,
     val listPositionInfo: ListPositionInfo = ListPositionInfo(),
