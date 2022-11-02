@@ -1,15 +1,21 @@
 package com.example.gif_api.app
 
 import android.app.Application
-import android.content.Context
 import com.example.gif_api.app.di.AppComponent
 import com.example.gif_api.app.di.DaggerAppComponent
+import com.example.gif_api.domain.utils.Dependencies
+import com.example.gif_api.domain.utils.HasDependencies
+import com.example.gif_apigifs_screen.presentation.ui.gif.di.GifSearchDependencies
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
 
-class App : Application() {
+class App : Application(), HasDependencies {
 
-    val component: AppComponent by lazy { DaggerAppComponent.factory().create(this) }
+    private val component: AppComponent by lazy { DaggerAppComponent.factory().create(this) }
+
+    override val dependencies: Map<Class<out Dependencies>, Dependencies> by lazy {
+        mapOf(GifSearchDependencies::class.java to component)
+    }
 
     override fun onCreate() {
         super.onCreate()
@@ -18,9 +24,3 @@ class App : Application() {
         }
     }
 }
-
-val Context.appComponent: AppComponent
-    get() = when (this) {
-        is App -> component
-        else -> (applicationContext as App).component
-    }

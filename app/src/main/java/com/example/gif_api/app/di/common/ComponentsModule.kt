@@ -1,9 +1,9 @@
 package com.example.gif_api.app.di.common
 
 import com.example.gif_api.app.di.AppComponent
-import com.example.gif_api.data.repositories.gif.di.DaggerGifRepositoryComponent
-import com.example.gif_api.data.repositories.gif.di.GifRepositoryComponent
-import com.example.gif_api.domain.repository.gif.GifRepository
+import com.example.gif_api.data.gif.di.DaggerGifRepositoryComponent
+import com.example.gif_api.data.gif.di.GifRepositoryComponent
+import com.example.gif_api.domain.gif.repository.GifRepository
 import dagger.Module
 import dagger.Provides
 
