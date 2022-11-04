@@ -7,5 +7,4 @@ dependencies {
     implementation(libs.coroutines)
     implementation(libs.inject)
     testImplementation(libs.bundles.unitTesting)
-    testImplementation(libs.coroutinesTest)
 }

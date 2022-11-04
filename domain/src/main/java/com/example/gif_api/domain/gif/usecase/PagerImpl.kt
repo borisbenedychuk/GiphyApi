@@ -11,14 +11,14 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.flatMapLatest
 import javax.inject.Inject
 
-class Pager @Inject constructor(
+class PagerImpl @Inject constructor(
     private val repository: GifRepository
-) {
+) : Pager {
 
     private val _pagesFlow = MutableStateFlow(PagerRequestModel(-1, ""))
 
     @OptIn(ExperimentalCoroutinesApi::class)
-    val pagesFlow: Flow<List<GifModel>>
+    override val pagesFlow: Flow<List<GifModel>>
         get() = _pagesFlow.flatMapLatest { requestModel ->
             repository.getPages(
                 query = requestModel.query,
@@ -30,7 +30,7 @@ class Pager @Inject constructor(
             )
         }
 
-    suspend fun newPages(query: String, requestedPage: Int): Result<Boolean> {
+    override suspend fun newPages(query: String, requestedPage: Int): Result<Boolean> {
         val result = when {
             requestedPage == -1 -> return emptyResult()
             requestedPage != 0 || repository.isGifCacheFresh(query) ->

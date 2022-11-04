@@ -30,4 +30,5 @@ dependencies {
     implementation(libs.bundles.compose)
     implementation(libs.dagger)
     kapt(libs.daggerCompiler)
+    testImplementation(libs.bundles.unitTesting)
 }

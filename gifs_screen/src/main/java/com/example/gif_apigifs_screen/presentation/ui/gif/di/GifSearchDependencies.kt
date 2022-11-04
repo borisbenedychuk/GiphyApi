@@ -7,6 +7,6 @@ import com.example.gif_api.domain.utils.Dependencies
 
 interface GifSearchDependencies : Dependencies {
     val imageLoader: ImageLoader
-    val pager: Pager
+    val pagerImpl: Pager
     val addToBlacklistUseCase: AddToBlacklistUseCase
 }

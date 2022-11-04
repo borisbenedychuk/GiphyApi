@@ -8,6 +8,7 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.OutlinedTextField
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
@@ -42,11 +43,10 @@ fun GifSearchScreen() {
     val viewModel = viewModel<GifSearchViewModel>(factory = component.viewModelFactory)
     GifSearchUI(
         imageLoader = component.imageLoader,
-        state = viewModel.gifSearchState,
+        state = viewModel.gifSearchState.collectAsState(initial = GifSearchState()).value,
         onNewAction = viewModel::handleAction,
     )
 }
-
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
 private fun GifSearchUI(
@@ -78,7 +78,7 @@ private fun GifSearchUI(
                 onBoundReached = { onNewAction(BoundsReached(it)) },
                 initialIndex = initialIndex,
                 onPageScrolled = { onNewAction(NewCurrentItem(state.items[it].id)) },
-                onBackPressed = { onNewAction(NavigateToGrid) },
+                onBackPressed = { onNewAction(NavigateToList) },
             )
         } else {
             Column(

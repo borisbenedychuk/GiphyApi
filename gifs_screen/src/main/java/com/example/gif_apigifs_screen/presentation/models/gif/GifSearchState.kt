@@ -1,5 +1,8 @@
 package com.example.gif_apigifs_screen.presentation.models.gif
 
+import androidx.compose.runtime.Immutable
+
+@Immutable
 data class GifSearchState(
     val items: List<GifItem> = emptyList(),
     val errorMsg: String? = null,

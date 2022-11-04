@@ -30,7 +30,6 @@ dependencies {
     implementation(libs.dagger)
     kapt(libs.daggerCompiler)
     testImplementation(libs.bundles.unitTesting)
-    testImplementation(libs.coroutinesTest)
     testImplementation(libs.roboelectric)
     testImplementation(libs.livedata)
     testImplementation(libs.mockWebServer)

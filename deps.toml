@@ -58,6 +58,6 @@ inject = "javax.inject:javax.inject:1"
 [bundles]
 
 androidXTest = ["androidXTestCore", "androidXTestRunner", "androidXTestRules"]
-unitTesting = ["junit", "truth", "mockito", "mockitoKtx"]
+unitTesting = ["junit", "truth", "mockito", "mockitoKtx", "coroutinesTest"]
 networking = ["serializationCore", "serializationJson", "retrofitSerializationInterop", "retrofit"]
 compose = ["composeCore", "composeMaterial", "composeActivity", "composePager", "navigationCompose", "coilCompose"]
