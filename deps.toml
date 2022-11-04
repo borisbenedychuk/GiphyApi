@@ -20,6 +20,7 @@ mockito = "4.8.1"
 roboelectric = "4.9"
 mockitoKtx = "4.0.0"
 androidXTest = "1.4.0"
+mockWebServer = "4.10.0"
 
 [libraries]
 
@@ -49,7 +50,7 @@ mockitoKtx = { module = "org.mockito.kotlin:mockito-kotlin", version.ref = "mock
 roboelectric = { module = "org.robolectric:robolectric", version.ref = "roboelectric" }
 androidXTestCore = { module = "androidx.test:core", version.ref = "androidXTest" }
 livedata = { module = "androidx.lifecycle:lifecycle-livedata-ktx", version.ref = "lifecycle" }
-
+mockWebServer = { module = "com.squareup.okhttp3:mockwebserver", version.ref = "mockWebServer" }
 androidXTestRunner = { module = "androidx.test:runner", version.ref = "androidXTest" }
 androidXTestRules = { module = "androidx.test:rules", version.ref = "androidXTest" }
 inject = "javax.inject:javax.inject:1"

@@ -33,4 +33,5 @@ dependencies {
     testImplementation(libs.coroutinesTest)
     testImplementation(libs.roboelectric)
     testImplementation(libs.livedata)
+    testImplementation(libs.mockWebServer)
 }

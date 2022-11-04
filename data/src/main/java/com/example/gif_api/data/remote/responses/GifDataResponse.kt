@@ -5,7 +5,7 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-class GifDataResponse(
+data class GifDataResponse(
     @SerialName("data")
     val gifs: List<GifResponse>,
     @SerialName("pagination")

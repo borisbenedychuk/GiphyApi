@@ -18,7 +18,7 @@ import org.robolectric.RuntimeEnvironment
 
 @RunWith(RobolectricTestRunner::class)
 @OptIn(ExperimentalCoroutinesApi::class)
-class GifDaoQueriesTest {
+class GifDaoTest {
 
     private lateinit var gifDao: GifDao
 
