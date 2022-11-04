@@ -15,7 +15,7 @@ interface RemoteGifDatasource {
 
 interface CacheGifDatasource {
 
-    suspend fun getGifs(query: String, pages: List<Int>): Flow<List<GifEntity>>
+    fun getGifs(query: String, pages: List<Int>): Flow<List<GifEntity>>
 
     suspend fun getFirstGif(query: String): GifEntity?
 

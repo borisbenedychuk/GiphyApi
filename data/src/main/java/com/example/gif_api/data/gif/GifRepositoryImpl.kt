@@ -10,6 +10,8 @@ import com.example.gif_api.domain.gif.model.GifModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import com.example.gif_api.domain.utils.Result
+import com.example.gif_api.domain.utils.emptyResult
+import com.example.gif_api.domain.utils.successResult
 import javax.inject.Inject
 
 private const val FIVE_HOURS = 1000 * 60 * 60 * 5
@@ -21,7 +23,7 @@ class GifRepositoryImpl @Inject constructor(
     private val gifInfoCache: CacheGifInfoDatasource,
 ) : GifRepository {
 
-    override suspend fun getPages(query: String, pages: List<Int>): Flow<List<GifModel>> {
+    override fun getPages(query: String, pages: List<Int>): Flow<List<GifModel>> {
         return gifCache.getGifs(query, pages).map { list -> list.map { it.asGifModel() } }
     }
 
@@ -80,8 +82,8 @@ class GifRepositoryImpl @Inject constructor(
     }
 
     override suspend fun loadPageAndCheckIfHasMore(query: String, page: Int): Result<Boolean> {
-        val currentQueryInfo = gifInfoCache.getQueryInfoEntity(query) ?: return Result.Empty
-        val allPagesInCache = page * PAGE <= currentQueryInfo.cachedPages - 1
+        val currentQueryInfo = gifInfoCache.getQueryInfoEntity(query) ?: return emptyResult()
+        val allPagesInCache = page <= currentQueryInfo.cachedPages - 1
         return if (!allPagesInCache) {
             val offset = currentQueryInfo.cachedPages * PAGE
             val result = remote.getGifs(
@@ -97,7 +99,7 @@ class GifRepositoryImpl @Inject constructor(
                 queryInfoTime = currentQueryInfo.lastQueryTime,
             )
         } else {
-            Result.Success(currentQueryInfo.cachedPages < currentQueryInfo.totalPages)
+            successResult(currentQueryInfo.cachedPages < currentQueryInfo.totalPages)
         }
     }
 
@@ -112,7 +114,7 @@ class GifRepositoryImpl @Inject constructor(
             is Result.Success -> {
                 val blackList = gifInfoCache.getBlacklistIds()
                 val count = result.data.pagination.totalCount
-                val totalPages = count / PAGE + if (count % PAGE != 0) 1 else 0
+                val totalPages = count / PAGE + if (count % PAGE > 0) 1 else 0
                 val cachePages = if (cachePagesCount > totalPages) totalPages else cachePagesCount
                 val newQueryInfoEntity = QueryInfoEntity(
                     query = query,
@@ -129,7 +131,7 @@ class GifRepositoryImpl @Inject constructor(
                     .filter { it.id !in blackList }
                 gifCache.saveGifs(entities)
                 gifInfoCache.saveQueryInfo(newQueryInfoEntity)
-                Result.Success(cachePages < totalPages)
+                successResult(cachePages < totalPages)
             }
             is Result.Error -> result
             is Result.Empty -> result

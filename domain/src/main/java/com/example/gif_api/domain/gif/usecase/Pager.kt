@@ -4,6 +4,7 @@ import com.example.gif_api.domain.gif.model.GifModel
 import com.example.gif_api.domain.gif.model.PagerRequestModel
 import com.example.gif_api.domain.gif.repository.GifRepository
 import com.example.gif_api.domain.utils.Result
+import com.example.gif_api.domain.utils.emptyResult
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -31,6 +32,7 @@ class Pager @Inject constructor(
 
     suspend fun newPages(query: String, requestedPage: Int): Result<Boolean> {
         val result = when {
+            requestedPage == -1 -> return emptyResult()
             requestedPage != 0 || repository.isGifCacheFresh(query) ->
                 repository.loadPageAndCheckIfHasMore(query, requestedPage)
             else -> repository.loadInitialPagesAndCheckIfHasMore(query)

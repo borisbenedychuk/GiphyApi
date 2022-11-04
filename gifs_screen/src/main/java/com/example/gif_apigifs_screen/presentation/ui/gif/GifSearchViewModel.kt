@@ -7,11 +7,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.gif_api.domain.gif.usecase.AddToBlacklistUseCase
 import com.example.gif_api.domain.gif.usecase.Pager
-import com.example.gif_apigifs_screen.presentation.models.gif.GifSearchAction
+import com.example.gif_api.domain.utils.Result
+import com.example.gif_apigifs_screen.presentation.models.gif.*
 import com.example.gif_apigifs_screen.presentation.models.gif.GifSearchAction.*
-import com.example.gif_apigifs_screen.presentation.models.gif.GifSearchState
-import com.example.gif_apigifs_screen.presentation.models.gif.ListPositionInfo
-import com.example.gif_apigifs_screen.presentation.models.gif.asItem
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -50,7 +48,7 @@ class GifSearchViewModel @Inject constructor(
 
     private fun retryLoad() {
         gifSearchState = gifSearchState.copy(errorMsg = null)
-        boundReached(com.example.gif_apigifs_screen.presentation.models.gif.BoundSignal.BOTTOM_REACHED)
+        boundReached(BoundSignal.BOTTOM_REACHED)
     }
 
     private fun updateCurrentItemId(id: String) {
@@ -95,11 +93,11 @@ class GifSearchViewModel @Inject constructor(
         }
     }
 
-    private fun boundReached(signal: com.example.gif_apigifs_screen.presentation.models.gif.BoundSignal) {
+    private fun boundReached(signal: BoundSignal) {
         val query = gifSearchState.query
         val requestPage = when {
-            signal == com.example.gif_apigifs_screen.presentation.models.gif.BoundSignal.BOTTOM_REACHED && gifSearchState.showFooter -> currentPage + 1
-            signal == com.example.gif_apigifs_screen.presentation.models.gif.BoundSignal.TOP_REACHED && currentPage > 1 -> currentPage - 1
+            signal == BoundSignal.BOTTOM_REACHED && gifSearchState.showFooter -> currentPage + 1
+            signal == BoundSignal.TOP_REACHED && currentPage > 1 -> currentPage - 1
             else -> return
         }
         requestPages(query, requestPage)
@@ -113,17 +111,17 @@ class GifSearchViewModel @Inject constructor(
         currentJob = viewModelScope.launch {
             delay(300)
             when (val result = pager.newPages(query, requestPage)) {
-                is com.example.gif_api.domain.utils.Result.Success -> {
+                is Result.Success -> {
                     currentPage = if (requestPage == 0) 1 else requestPage
                     gifSearchState = gifSearchState.copy(showFooter = result.data, loading = false)
                 }
-                is com.example.gif_api.domain.utils.Result.Error -> {
+                is Result.Error -> {
                     gifSearchState = gifSearchState.copy(
                         errorMsg = result.msg.orEmpty(),
                         loading = false,
                     )
                 }
-                is com.example.gif_api.domain.utils.Result.Empty -> {
+                is Result.Empty -> {
                     gifSearchState = gifSearchState.copy(
                         items = emptyList(),
                         loading = false,

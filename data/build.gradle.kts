@@ -1,6 +1,6 @@
 plugins {
     id("com.android.library")
-    id("kotlinx-serialization")
+    kotlin("plugin.serialization")
     kotlin("android")
     kotlin("kapt")
 }
@@ -8,7 +8,6 @@ plugins {
 android {
     namespace = "com.example.gif_api.data"
     compileSdk = 33
-
     defaultConfig {
         minSdk = 21
         targetSdk = 33
@@ -18,9 +17,7 @@ android {
         sourceCompatibility = JavaVersion.VERSION_1_8
         targetCompatibility = JavaVersion.VERSION_1_8
     }
-    kotlinOptions {
-        jvmTarget = "1.8"
-    }
+    kotlinOptions.jvmTarget = "1.8"
 }
 
 dependencies {
@@ -32,4 +29,8 @@ dependencies {
     kapt(libs.roomCompiler)
     implementation(libs.dagger)
     kapt(libs.daggerCompiler)
+    testImplementation(libs.bundles.unitTesting)
+    testImplementation(libs.coroutinesTest)
+    testImplementation(libs.roboelectric)
+    testImplementation(libs.livedata)
 }

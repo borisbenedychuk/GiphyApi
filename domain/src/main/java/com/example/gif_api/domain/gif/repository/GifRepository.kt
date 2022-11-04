@@ -6,7 +6,7 @@ import kotlinx.coroutines.flow.Flow
 
 interface GifRepository {
 
-    suspend fun getPages(query: String, pages: List<Int>): Flow<List<GifModel>>
+    fun getPages(query: String, pages: List<Int>): Flow<List<GifModel>>
 
     suspend fun addGifToBlackList(id: String)
 

@@ -56,8 +56,8 @@ fun LazyListScope.gifItems(
 ) {
     itemsIndexed(
         items = items,
-        contentType = { i, item -> item.id },
-        key = { i, item -> item.originalUrl },
+        contentType = { _, item -> item.id },
+        key = { _, item -> item.originalUrl },
     ) { i, item ->
         GifSearchColumnItem(
             modifier = Modifier.animateItemPlacement(),

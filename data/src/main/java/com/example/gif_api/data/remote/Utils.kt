@@ -1,31 +1,29 @@
 package com.example.gif_api.data.remote
 
 import com.example.gif_api.domain.utils.Result
+import com.example.gif_api.domain.utils.emptyResult
+import com.example.gif_api.domain.utils.errorResult
+import com.example.gif_api.domain.utils.successResult
 import retrofit2.HttpException
 import retrofit2.Response
 
-suspend fun <T> safeApiCall(
+inline fun <T> safeApiCall(
     isEmptyPredicate: (Response<T>) -> Boolean = { it.body() == null },
-    call: suspend () -> Response<T>,
+    call: () -> Response<T>,
 ): Result<T> =
     try {
         val response: Response<T> = call()
-        if (response.isSuccessful) {
-            val isEmpty = isEmptyPredicate(response)
-            if (isEmpty) {
-                Result.Empty
-            } else {
-                response.body()?.let {
-                    Result.Success(it)
-                } ?: Result.Error(response.message(), response.code())
+        response.run {
+            when {
+                !isSuccessful -> errorResult(message(), code())
+                isEmptyPredicate(this) -> emptyResult()
+                else -> body()?.let(::successResult) ?: errorResult(message(), code())
             }
-        } else {
-            Result.Error(response.message(), response.code())
         }
     } catch (e: HttpException) {
         e.printStackTrace()
-        Result.Error(e.message(), e.code())
+        errorResult(e.message(), e.code())
     } catch (e: Exception) {
         e.printStackTrace()
-        Result.Error(e.message)
+        errorResult(e.message)
     }
