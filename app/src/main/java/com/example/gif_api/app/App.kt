@@ -5,7 +5,7 @@ import com.example.gif_api.app.di.AppComponent
 import com.example.gif_api.app.di.DaggerAppComponent
 import com.example.gif_api.domain.utils.Dependencies
 import com.example.gif_api.domain.utils.HasDependencies
-import com.example.gif_apigifs_screen.presentation.ui.gif.di.GifSearchDependencies
+import com.example.gif_api.gifs_screen.ui.gif.di.GifSearchDependencies
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
 

@@ -5,8 +5,12 @@ import com.example.gif_api.domain.gif.usecase.AddToBlacklistUseCase
 import com.example.gif_api.domain.gif.usecase.Pager
 import com.example.gif_api.domain.utils.errorResult
 import com.example.gif_api.domain.utils.successResult
+import com.example.gif_api.gifs_screen.models.gif.BoundSignal
+import com.example.gif_api.gifs_screen.models.gif.GifSearchAction
+import com.example.gif_api.gifs_screen.models.gif.ListPositionInfo
+import com.example.gif_api.gifs_screen.models.gif.asItem
 import com.example.gif_apigifs_screen.presentation.models.gif.*
-import com.example.gif_apigifs_screen.presentation.ui.gif.GifSearchViewModel
+import com.example.gif_api.gifs_screen.ui.gif.GifSearchViewModel
 import com.google.common.truth.Truth.assertThat
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi

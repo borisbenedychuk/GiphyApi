@@ -6,11 +6,12 @@ import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.createComposeRule
 import coil.ImageLoader
 import com.example.core_ui.getDependencies
-import com.example.gif_apigifs_screen.presentation.MainActivity
-import com.example.gif_apigifs_screen.presentation.models.gif.GifItem
-import com.example.gif_apigifs_screen.presentation.models.gif.GifSearchState
+import com.example.gif_api.gifs_screen.MainActivity
+import com.example.gif_api.gifs_screen.models.gif.GifItem
+import com.example.gif_api.gifs_screen.models.gif.GifSearchState
+import com.example.gif_api.gifs_screen.ui.gif.*
 import com.example.gif_apigifs_screen.presentation.ui.gif.*
-import com.example.gif_apigifs_screen.presentation.ui.gif.di.GifSearchDependencies
+import com.example.gif_api.gifs_screen.ui.gif.di.GifSearchDependencies
 import org.junit.After
 import org.junit.Before
 import org.junit.Rule
