@@ -17,8 +17,7 @@ import org.robolectric.RuntimeEnvironment
 @OptIn(ExperimentalCoroutinesApi::class)
 class GifInfoDaoTest {
 
-    private lateinit var gifDao: GifInfoDao
-
+    private lateinit var gifInfoDao: GifInfoDao
     private lateinit var queryInfo: QueryInfoEntity
 
     @Before
@@ -27,7 +26,7 @@ class GifInfoDaoTest {
             RuntimeEnvironment.getApplication(),
             AppDB::class.java
         ).build()
-        gifDao = room.gifInfoDao
+        gifInfoDao = room.gifInfoDao
         queryInfo = QueryInfoEntity(
             query = QUERY,
             totalSize = PAGE_SIZE * TOTAL_PAGES,
@@ -35,34 +34,34 @@ class GifInfoDaoTest {
             cachedPages = CACHED_PAGES,
             lastQueryTime = System.currentTimeMillis(),
         )
-        runTest { gifDao.saveQueryInfo(queryInfo) }
+        runTest { gifInfoDao.saveQueryInfo(queryInfo) }
     }
 
     @Test
     fun `test get query info`() = runTest {
-        val queryInfoEntity = gifDao.getQueryInfoEntity(QUERY)
+        val queryInfoEntity = gifInfoDao.getQueryInfoEntity(QUERY)
         assertThat(queryInfoEntity).isEqualTo(queryInfo)
     }
 
     @Test
     fun `test delete query info`() = runTest {
-        gifDao.deleteQueryInfoEntities(QUERY)
-        val queryInfoEntity = gifDao.getQueryInfoEntity(QUERY)
+        gifInfoDao.deleteQueryInfoEntities(QUERY)
+        val queryInfoEntity = gifInfoDao.getQueryInfoEntity(QUERY)
         assertThat(queryInfoEntity).isNull()
     }
 
     @Test
     fun `test get query info entities`() = runTest {
-        val queryInfoEntities = gifDao.getQueryInfoEntities()
+        val queryInfoEntities = gifInfoDao.getQueryInfoEntities()
         assertThat(queryInfoEntities).hasSize(1)
         assertThat(queryInfoEntities.first()).isEqualTo(queryInfo)
     }
 
     @Test
     fun `test blacklist`() = runTest {
-        assertThat(gifDao.getBlacklistIds()).isEmpty()
-        gifDao.addIdToBlacklist(BlackListEntity(TEST_ID))
-        val blacklist = gifDao.getBlacklistIds()
+        assertThat(gifInfoDao.getBlacklistIds()).isEmpty()
+        gifInfoDao.addIdToBlacklist(BlackListEntity(TEST_ID))
+        val blacklist = gifInfoDao.getBlacklistIds()
         assertThat(blacklist).hasSize(1)
         assertThat(blacklist.first()).isEqualTo(TEST_ID)
     }

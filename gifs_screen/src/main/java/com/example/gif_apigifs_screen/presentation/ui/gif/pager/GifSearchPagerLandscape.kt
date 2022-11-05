@@ -8,10 +8,12 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import coil.ImageLoader
 import com.example.gif_apigifs_screen.presentation.models.gif.GifItem
 import com.example.gif_apigifs_screen.presentation.models.gif.ImageState
+import com.example.gif_apigifs_screen.presentation.ui.gif.PAGER_LANDSCAPE_TAG
 import com.example.gif_apigifs_screen.presentation.utils.compose.rememberState
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.PagerState
@@ -30,6 +32,7 @@ fun GifSearchPagerLandscape(
     val currentItem = items[pagerState.currentPage]
     Row(
         modifier = Modifier
+            .testTag(PAGER_LANDSCAPE_TAG)
             .fillMaxSize()
             .background(MaterialTheme.colors.background),
         horizontalArrangement = Arrangement.spacedBy(30.dp)

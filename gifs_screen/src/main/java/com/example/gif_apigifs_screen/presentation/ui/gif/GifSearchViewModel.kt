@@ -112,7 +112,6 @@ class GifSearchViewModel @Inject constructor(
             delay(300)
             when (val result = pager.newPages(query, requestPage)) {
                 is Result.Success -> {
-                    println("Success!")
                     currentPage = if (requestPage == 0) 1 else requestPage
                     _gifSearchState.update { it.copy(showFooter = result.data, loading = false) }
                 }

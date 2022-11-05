@@ -30,6 +30,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.FilterQuality
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import coil.ImageLoader
 import coil.compose.AsyncImage
@@ -40,6 +41,8 @@ import com.example.gif_apigifs_screen.presentation.models.gif.GifItem
 import com.example.gif_apigifs_screen.presentation.models.gif.ImageState
 import com.example.gif_apigifs_screen.presentation.theme.ui.GifApiTheme
 import com.example.gif_apigifs_screen.presentation.ui.gif.DeleteIcon
+import com.example.gif_apigifs_screen.presentation.ui.gif.FOOTER_TAG
+import com.example.gif_apigifs_screen.presentation.ui.gif.RETRY_TAG
 import com.example.gif_apigifs_screen.presentation.utils.compose.fillMaxSmallestWidth
 import com.example.gif_apigifs_screen.presentation.utils.compose.rememberInteractionSource
 import com.example.gif_apigifs_screen.presentation.utils.compose.rememberState
@@ -72,6 +75,7 @@ fun LazyListScope.gifItems(
             if (errorMsg == null) {
                 CircularProgressIndicator(
                     modifier = Modifier
+                        .testTag(FOOTER_TAG)
                         .padding(vertical = 50.dp)
                         .size(40.dp),
                     color = MaterialTheme.colors.primary,
@@ -80,6 +84,7 @@ fun LazyListScope.gifItems(
             } else {
                 RetryIcon(
                     modifier = Modifier
+                        .testTag(RETRY_TAG)
                         .padding(vertical = 50.dp)
                         .size(80.dp),
                     onRetryClick = onRetryClick,

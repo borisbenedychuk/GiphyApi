@@ -10,6 +10,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import coil.ImageLoader
 import coil.compose.AsyncImage
@@ -19,6 +20,8 @@ import com.example.gif_api.R
 import com.example.gif_apigifs_screen.presentation.models.gif.GifItem
 import com.example.gif_apigifs_screen.presentation.models.gif.ImageState
 import com.example.gif_apigifs_screen.presentation.models.gif.ImageState.*
+import com.example.gif_apigifs_screen.presentation.ui.gif.LIST_ITEM_TAG
+import com.example.gif_apigifs_screen.presentation.ui.gif.PAGER_PORTRAIT_TAG
 import com.example.gif_apigifs_screen.presentation.utils.compose.rememberState
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
@@ -37,6 +40,7 @@ fun GifSearchPagerPortrait(
     val currentItem = items[pagerState.currentPage]
     Column(
         modifier = Modifier
+            .testTag(PAGER_PORTRAIT_TAG)
             .fillMaxSize()
             .background(MaterialTheme.colors.background),
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -96,6 +100,7 @@ fun GifPager(
             placeholder = painter,
             error = painter,
             modifier = Modifier
+                .testTag(LIST_ITEM_TAG + items[count].id)
                 .fillMaxWidth()
                 .graphicsLayer {
                     val alpha = if (currentPage == count) 1f - deleteAnimationProgress else 1f

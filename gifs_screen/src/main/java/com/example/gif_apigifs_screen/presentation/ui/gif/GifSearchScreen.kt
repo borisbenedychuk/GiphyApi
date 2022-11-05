@@ -15,6 +15,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -47,9 +48,10 @@ fun GifSearchScreen() {
         onNewAction = viewModel::handleAction,
     )
 }
+
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
-private fun GifSearchUI(
+fun GifSearchUI(
     imageLoader: ImageLoader,
     state: GifSearchState,
     onNewAction: (GifSearchAction) -> Unit,
@@ -85,7 +87,6 @@ private fun GifSearchUI(
                 modifier = Modifier.fillMaxSize(),
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
-
                 OutlinedTextField(
                     modifier = Modifier
                         .padding(20.dp)
@@ -140,6 +141,7 @@ private fun GifSearchUI(
                         ) {
                             CircularProgressIndicator(
                                 modifier = Modifier
+                                    .testTag(GLOBAL_LOADING_TAG)
                                     .size(50.dp)
                                     .align(Alignment.Center),
                                 color = MaterialTheme.colors.primary,
