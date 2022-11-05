@@ -10,7 +10,6 @@ import com.example.gif_api.gifs_screen.MainActivity
 import com.example.gif_api.gifs_screen.models.gif.GifItem
 import com.example.gif_api.gifs_screen.models.gif.GifSearchState
 import com.example.gif_api.gifs_screen.ui.gif.*
-import com.example.gif_apigifs_screen.presentation.ui.gif.*
 import com.example.gif_api.gifs_screen.ui.gif.di.GifSearchDependencies
 import org.junit.After
 import org.junit.Before
@@ -133,14 +132,18 @@ class GifSearchUITest {
         composeRule.setContent {
             GifSearchUI(
                 imageLoader = imageLoader,
-                state = GifSearchState(query = QUERY, showFooter = true),
+                state = GifSearchState(
+                    query = QUERY,
+                    showFooter = true,
+                    items = gifItems.take(1),
+                ),
                 onNewAction = {},
             )
         }
         composeRule
             .onNodeWithTag(LIST_PORTRAIT_TAG)
-            .onChildAt(0)
-            .assert(hasTestTag(FOOTER_TAG))
+            .onChildren()
+            .assertCountEquals(2)
     }
 
     @Test
@@ -151,15 +154,17 @@ class GifSearchUITest {
                 state = GifSearchState(
                     query = QUERY,
                     errorMsg = ERROR,
-                    showFooter = true
+                    showFooter = true,
+                    items = gifItems.take(1),
                 ),
                 onNewAction = {},
             )
         }
         composeRule
             .onNodeWithTag(LIST_PORTRAIT_TAG)
-            .onChildAt(0)
-            .assert(hasTestTag(RETRY_TAG))
+            .onChildren()
+            .onLast()
+            .assert(hasContentDescription("Retry"))
     }
 
     @Test

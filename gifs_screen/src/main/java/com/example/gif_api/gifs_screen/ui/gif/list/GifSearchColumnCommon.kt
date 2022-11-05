@@ -170,7 +170,7 @@ fun RetryIcon(
 ) {
     Icon(
         imageVector = Icons.Default.Refresh,
-        contentDescription = "Delete gif",
+        contentDescription = "Retry",
         tint = MaterialTheme.colors.primary,
         modifier = modifier
             .clip(CircleShape)
