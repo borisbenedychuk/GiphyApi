@@ -174,7 +174,7 @@ class GifSearchUITest {
             )
         }
         composeRule
-            .onNodeWithTag(LIST_PORTRAIT_TAG)
+            .onNodeWithTag(GLOBAL_LOADING_TAG)
             .assertExists()
     }
 
