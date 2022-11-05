@@ -47,28 +47,26 @@ fun GifSearchList(
             }
         }
     }
-    val lazyListScopeBody: LazyListScope.() -> Unit = remember {
-        {
-            gifItems(
-                items = items,
-                imageLoader = imageLoader,
-                onItemClick = { index ->
-                    onItemClick(
-                        ListPositionInfo(
-                            itemId = items[index].id,
-                            itemOffset = lazyListState
-                                .layoutInfo
-                                .visibleItemsInfo
-                                .find { it.index == index }?.offset ?: 0,
-                        )
+    val lazyListScopeBody: LazyListScope.() -> Unit = {
+        gifItems(
+            items = items,
+            imageLoader = imageLoader,
+            onItemClick = { index ->
+                onItemClick(
+                    ListPositionInfo(
+                        itemId = items[index].id,
+                        itemOffset = lazyListState
+                            .layoutInfo
+                            .visibleItemsInfo
+                            .find { it.index == index }?.offset ?: 0,
                     )
-                },
-                onDeleteItem = onDeleteItem,
-                showFooter = showFooter,
-                errorMsg = errorMsg,
-                onRetryClick = onRetryClick,
-            )
-        }
+                )
+            },
+            onDeleteItem = onDeleteItem,
+            showFooter = showFooter,
+            errorMsg = errorMsg,
+            onRetryClick = onRetryClick,
+        )
     }
     if (isInLandScape()) {
         LazyRow(

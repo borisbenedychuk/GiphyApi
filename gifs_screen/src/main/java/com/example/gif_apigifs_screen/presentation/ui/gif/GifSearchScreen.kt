@@ -7,10 +7,7 @@ import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.OutlinedTextField
 import androidx.compose.material.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.pointer.pointerInput
@@ -42,9 +39,10 @@ import kotlinx.coroutines.withContext
 fun GifSearchScreen() {
     val component = getGifSearchComponent()
     val viewModel = viewModel<GifSearchViewModel>(factory = component.viewModelFactory)
+    val state by viewModel.gifSearchState.collectAsState(initial = GifSearchState())
     GifSearchUI(
         imageLoader = component.imageLoader,
-        state = viewModel.gifSearchState.collectAsState(initial = GifSearchState()).value,
+        state = state,
         onNewAction = viewModel::handleAction,
     )
 }

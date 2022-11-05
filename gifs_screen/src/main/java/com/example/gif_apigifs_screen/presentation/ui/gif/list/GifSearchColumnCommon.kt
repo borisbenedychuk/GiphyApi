@@ -70,7 +70,7 @@ fun LazyListScope.gifItems(
             onDeleteItem = onDeleteItem,
         )
     }
-    if (showFooter) {
+    if (items.isNotEmpty() && showFooter) {
         item {
             if (errorMsg == null) {
                 CircularProgressIndicator(
