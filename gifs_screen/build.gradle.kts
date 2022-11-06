@@ -1,8 +1,12 @@
+@file:Suppress("DSL_SCOPE_VIOLATION")
+
 plugins {
-    id("com.android.library")
-    kotlin("plugin.serialization")
-    kotlin("android")
-    kotlin("kapt")
+    with(deps.plugins) {
+        alias { androidLibrary }
+        alias { kotlinAndroid }
+        alias { kotlinSerialization }
+        alias { kotlinKapt }
+    }
 }
 
 android {
@@ -21,14 +25,14 @@ android {
         freeCompilerArgs = listOf("-Xjvm-default=enable")
     }
     buildFeatures.compose = true
-    composeOptions.kotlinCompilerExtensionVersion = libs.versions.composeCompiler.get()
+    composeOptions.kotlinCompilerExtensionVersion = deps.versions.composeCompiler.get()
 }
 
 dependencies {
     implementation(projects.domain)
     implementation(projects.coreUi)
-    implementation(libs.bundles.compose)
-    implementation(libs.dagger)
-    kapt(libs.daggerCompiler)
-    testImplementation(libs.bundles.unitTesting)
+    implementation(deps.bundles.compose)
+    implementation(deps.dagger)
+    kapt(deps.daggerCompiler)
+    testImplementation(deps.bundles.unitTesting)
 }

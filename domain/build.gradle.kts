@@ -1,10 +1,12 @@
+@file:Suppress("DSL_SCOPE_VIOLATION")
+
 plugins {
     `java-library`
-    kotlin("jvm")
+    alias { deps.plugins.kotlinJvm }
 }
 
 dependencies {
-    implementation(libs.coroutines)
-    implementation(libs.inject)
-    testImplementation(libs.bundles.unitTesting)
+    implementation(deps.coroutines)
+    implementation(deps.inject)
+    testImplementation(deps.bundles.unitTesting)
 }

@@ -16,7 +16,7 @@ pluginManagement {
 }
 
 dependencyResolutionManagement {
-    versionCatalogs.create("libs").from(files("deps.toml"))
+    versionCatalogs.create("deps").from(files("deps.toml"))
     repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
     repositories {
         google()

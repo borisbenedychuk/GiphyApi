@@ -1,8 +1,12 @@
+@file:Suppress("DSL_SCOPE_VIOLATION")
+
 plugins {
-    id("com.android.library")
-    kotlin("plugin.serialization")
-    kotlin("android")
-    kotlin("kapt")
+    with(deps.plugins) {
+        alias { androidLibrary }
+        alias { kotlinKapt }
+        alias { kotlinAndroid }
+        alias { kotlinSerialization }
+    }
 }
 
 android {
@@ -22,15 +26,15 @@ android {
 
 dependencies {
     implementation(projects.domain)
-    implementation(libs.coroutines)
-    implementation(libs.coreKtx)
-    implementation(libs.roomKtx)
-    implementation(libs.bundles.networking)
-    kapt(libs.roomCompiler)
-    implementation(libs.dagger)
-    kapt(libs.daggerCompiler)
-    testImplementation(libs.bundles.unitTesting)
-    testImplementation(libs.roboelectric)
-    testImplementation(libs.livedata)
-    testImplementation(libs.mockWebServer)
+    implementation(deps.coroutines)
+    implementation(deps.coreKtx)
+    implementation(deps.roomKtx)
+    implementation(deps.bundles.networking)
+    kapt(deps.roomCompiler)
+    implementation(deps.dagger)
+    kapt(deps.daggerCompiler)
+    testImplementation(deps.bundles.unitTesting)
+    testImplementation(deps.roboelectric)
+    testImplementation(deps.livedata)
+    testImplementation(deps.mockWebServer)
 }

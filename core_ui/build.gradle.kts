@@ -1,6 +1,10 @@
+@file:Suppress("DSL_SCOPE_VIOLATION")
+
 plugins {
-    id("com.android.library")
-    kotlin("android")
+    with(deps.plugins) {
+        alias { androidLibrary }
+        alias { kotlinAndroid }
+    }
 }
 
 android {

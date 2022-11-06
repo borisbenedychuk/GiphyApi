@@ -1,8 +1,12 @@
+@file:Suppress("DSL_SCOPE_VIOLATION")
+
 plugins {
-    id("com.android.application")
-    kotlin("plugin.serialization")
-    kotlin("android")
-    kotlin("kapt")
+    with(deps.plugins) {
+        alias { androidApplication }
+        alias { kotlinAndroid }
+        alias { kotlinSerialization }
+        alias { kotlinKapt }
+    }
 }
 
 android {
@@ -22,8 +26,8 @@ android {
         freeCompilerArgs = listOf("-Xjvm-default=enable")
     }
     buildFeatures.compose = true
-    composeOptions.kotlinCompilerExtensionVersion = libs.versions.composeCompiler.get()
     testOptions.unitTests.isIncludeAndroidResources = true
+    composeOptions.kotlinCompilerExtensionVersion = deps.versions.composeCompiler.get()
 }
 
 dependencies {
@@ -31,15 +35,15 @@ dependencies {
     implementation(projects.domain)
     implementation(projects.gifsScreen)
     implementation(projects.coreUi)
-    implementation(libs.coreKtx)
-    implementation(libs.roomKtx)
-    implementation(libs.coilCompose)
-    implementation(libs.coilGif)
-    implementation(libs.bundles.networking)
-    implementation(libs.dagger)
-    kapt(libs.daggerCompiler)
-    testImplementation(libs.bundles.unitTesting)
-    testImplementation(libs.roboelectric)
-    testImplementation("androidx.compose.ui:ui-test-junit4:${libs.versions.compose.get()}")
-    debugImplementation("androidx.compose.ui:ui-test-manifest:${libs.versions.compose.get()}")
+    implementation(deps.coreKtx)
+    implementation(deps.roomKtx)
+    implementation(deps.coilCompose)
+    implementation(deps.coilGif)
+    implementation(deps.bundles.networking)
+    implementation(deps.dagger)
+    kapt(deps.daggerCompiler)
+    testImplementation(deps.bundles.unitTesting)
+    testImplementation(deps.roboelectric)
+    testImplementation(deps.composeTest)
+    debugImplementation(deps.composeTestManifest)
 }
