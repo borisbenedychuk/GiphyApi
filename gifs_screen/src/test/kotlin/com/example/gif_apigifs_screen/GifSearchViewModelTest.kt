@@ -44,7 +44,7 @@ class GifSearchViewModelTest {
             pager = mock {
                 val flow = MutableStateFlow(emptyList<GifModel>())
                 on { pagesFlow } doReturn flow
-                onBlocking { newPages(QUERY1, 0) } doAnswer {
+                onBlocking { newPages(QUERY1, 1) } doAnswer {
                     flow.tryEmit(models().take(PAGE_SIZE * 2))
                     successResult(true)
                 }

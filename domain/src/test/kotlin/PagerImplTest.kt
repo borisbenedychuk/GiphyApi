@@ -1,4 +1,4 @@
-import com.example.gif_api.domain.gif.usecase.PagerImpl
+import com.example.gif_api.domain.gif.usecase.Pager
 import com.example.gif_api.domain.utils.Result
 import com.example.gif_api.domain.utils.successResult
 import com.google.common.truth.Truth.assertThat
@@ -12,14 +12,14 @@ import org.junit.Test
 @OptIn(ExperimentalCoroutinesApi::class)
 class PagerImplTest {
 
-    private lateinit var pagerImpl: PagerImpl
+    private lateinit var pagerImpl: Pager
 
     private lateinit var mockGifRepository: MockGifRepository
 
     @Before
     fun preparePager() {
         mockGifRepository = MockGifRepository()
-        pagerImpl = PagerImpl(mockGifRepository)
+        pagerImpl = Pager(mockGifRepository)
     }
 
     @Test
