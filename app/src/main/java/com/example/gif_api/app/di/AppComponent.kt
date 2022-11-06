@@ -3,7 +3,6 @@ package com.example.gif_api.app.di
 import android.content.Context
 import com.example.gif_api.app.di.common.CommonModule
 import com.example.gif_api.app.di.common.ComponentsModule
-import com.example.gif_api.app.di.common.GifUseCaseBindingModule
 import com.example.gif_api.data.gif.di.CommonRepositoryDependencies
 import com.example.gif_api.domain.gif.usecase.DeleteOldDataCacheUseCase
 import com.example.gif_api.gifs_screen.ui.gif.di.GifSearchDependencies
@@ -15,7 +14,6 @@ import dagger.Component
     modules = [
         ComponentsModule::class,
         CommonModule::class,
-        GifUseCaseBindingModule::class,
     ]
 )
 interface AppComponent : CommonRepositoryDependencies, GifSearchDependencies {
