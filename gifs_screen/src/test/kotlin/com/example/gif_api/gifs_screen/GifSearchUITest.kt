@@ -1,21 +1,22 @@
+package com.example.gif_api.gifs_screen
+
 import android.content.Context
 import android.content.res.Configuration
 import android.content.res.Configuration.ORIENTATION_LANDSCAPE
 import android.content.res.Configuration.ORIENTATION_PORTRAIT
+import androidx.activity.ComponentActivity
 import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.createComposeRule
 import coil.ImageLoader
-import com.example.core_ui.getDependencies
-import com.example.gif_api.gifs_screen.MainActivity
 import com.example.gif_api.gifs_screen.models.gif.GifItem
 import com.example.gif_api.gifs_screen.models.gif.GifSearchState
 import com.example.gif_api.gifs_screen.ui.gif.*
-import com.example.gif_api.gifs_screen.ui.gif.di.GifSearchDependencies
 import org.junit.After
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.mockito.kotlin.mock
 import org.robolectric.Robolectric
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.RuntimeEnvironment
@@ -27,9 +28,9 @@ class GifSearchUITest {
     @get:Rule
     val composeRule = createComposeRule()
 
-    private lateinit var imageLoader: ImageLoader
+    private val imageLoader: ImageLoader = mock()
 
-    private lateinit var activityController: ActivityController<MainActivity>
+    private lateinit var activityController: ActivityController<ComponentActivity>
 
     private val gifItems: List<GifItem>
         get() = List(30) {
@@ -43,9 +44,7 @@ class GifSearchUITest {
 
     @Before
     fun setUp() {
-        val dependencies: GifSearchDependencies = context.getDependencies()
-        imageLoader = dependencies.imageLoader
-        activityController = Robolectric.buildActivity(MainActivity::class.java).create()
+        activityController = Robolectric.buildActivity(ComponentActivity::class.java).create()
     }
 
     @After
@@ -164,7 +163,7 @@ class GifSearchUITest {
             .onNodeWithTag(LIST_PORTRAIT_TAG)
             .onChildren()
             .onLast()
-            .assert(hasContentDescription("Retry"))
+            .assertExists()
     }
 
     @Test
@@ -198,5 +197,4 @@ private fun ActivityController<*>.changeOrientation(portrait: Boolean = true) =
         }
     )
 
-val context: Context
-    get() = RuntimeEnvironment.getApplication()
+private val context: Context get() = RuntimeEnvironment.getApplication()

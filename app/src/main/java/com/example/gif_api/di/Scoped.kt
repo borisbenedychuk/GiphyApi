@@ -1,4 +1,4 @@
-package com.example.gif_api.app.di
+package com.example.gif_api.di
 
 import javax.inject.Scope
 import kotlin.reflect.KClass

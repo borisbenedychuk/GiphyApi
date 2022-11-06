@@ -1,4 +1,4 @@
-package com.example.gif_apigifs_screen
+package com.example.gif_api.gifs_screen
 
 import com.example.gif_api.domain.gif.model.GifModel
 import com.example.gif_api.domain.gif.usecase.AddToBlacklistUseCase

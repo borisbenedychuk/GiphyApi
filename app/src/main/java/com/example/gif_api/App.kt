@@ -1,8 +1,8 @@
-package com.example.gif_api.app
+package com.example.gif_api
 
 import android.app.Application
-import com.example.gif_api.app.di.AppComponent
-import com.example.gif_api.app.di.DaggerAppComponent
+import com.example.gif_api.di.AppComponent
+import com.example.gif_api.di.DaggerAppComponent
 import com.example.gif_api.domain.utils.Dependencies
 import com.example.gif_api.domain.utils.HasDependencies
 import com.example.gif_api.gifs_screen.ui.gif.di.GifSearchDependencies

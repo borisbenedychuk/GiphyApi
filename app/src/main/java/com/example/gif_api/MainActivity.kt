@@ -1,4 +1,4 @@
-package com.example.gif_api.gifs_screen
+package com.example.gif_api
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity

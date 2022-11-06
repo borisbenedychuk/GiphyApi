@@ -26,7 +26,6 @@ android {
         freeCompilerArgs = listOf("-Xjvm-default=enable")
     }
     buildFeatures.compose = true
-    testOptions.unitTests.isIncludeAndroidResources = true
     composeOptions.kotlinCompilerExtensionVersion = deps.versions.composeCompiler.get()
 }
 
@@ -37,13 +36,9 @@ dependencies {
     implementation(projects.coreUi)
     implementation(deps.coreKtx)
     implementation(deps.roomKtx)
-    implementation(deps.coilCompose)
+    implementation(deps.composeActivity)
     implementation(deps.coilGif)
     implementation(deps.bundles.networking)
     implementation(deps.dagger)
     kapt(deps.daggerCompiler)
-    testImplementation(deps.bundles.unitTesting)
-    testImplementation(deps.roboelectric)
-    testImplementation(deps.composeTest)
-    debugImplementation(deps.composeTestManifest)
 }
