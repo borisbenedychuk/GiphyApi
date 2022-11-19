@@ -40,6 +40,7 @@ import com.example.gif_api.R.*
 import com.example.gif_api.gifs_screen.models.gif.GifItem
 import com.example.gif_api.gifs_screen.models.gif.ImageState
 import com.example.gif_api.gifs_screen.theme.ui.GifApiTheme
+import com.example.gif_api.gifs_screen.ui.gif.DELETE_TAG
 import com.example.gif_api.gifs_screen.ui.gif.DeleteIcon
 import com.example.gif_api.gifs_screen.ui.gif.FOOTER_TAG
 import com.example.gif_api.gifs_screen.ui.gif.RETRY_TAG
@@ -71,8 +72,8 @@ fun LazyListScope.gifItems(
         )
     }
     if (items.isNotEmpty() && showFooter) {
-        item {
-            if (errorMsg == null) {
+        if (errorMsg == null) {
+            item {
                 CircularProgressIndicator(
                     modifier = Modifier
                         .testTag(FOOTER_TAG)
@@ -81,7 +82,9 @@ fun LazyListScope.gifItems(
                     color = MaterialTheme.colors.primary,
                     strokeWidth = 6.dp,
                 )
-            } else {
+            }
+        } else {
+            item {
                 RetryIcon(
                     modifier = Modifier
                         .testTag(RETRY_TAG)
@@ -155,6 +158,7 @@ fun GifSearchColumnItem(
                     item = item,
                     onDeleteItem = onDeleteItem,
                     modifier = Modifier
+                        .testTag(DELETE_TAG)
                         .align(Alignment.TopEnd)
                         .padding(GifApiTheme.dimensions.cardDeleteButtonPadding)
                 )

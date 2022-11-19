@@ -15,6 +15,7 @@ android {
     defaultConfig {
         minSdk = 21
         targetSdk = 33
+        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_1_8
@@ -38,5 +39,8 @@ dependencies {
     testImplementation(deps.bundles.unitTesting)
     testImplementation(deps.roboelectric)
     testImplementation(deps.composeTest)
+    androidTestImplementation(deps.bundles.androidXTest)
+    androidTestImplementation(deps.composeTest)
+    androidTestImplementation(deps.bundles.unitTesting)
     debugImplementation(deps.composeTestManifest)
 }
