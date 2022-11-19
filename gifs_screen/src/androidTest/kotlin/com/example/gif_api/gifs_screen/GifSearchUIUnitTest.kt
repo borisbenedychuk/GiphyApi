@@ -14,7 +14,7 @@ import org.junit.Test
 import org.junit.runner.RunWith
 
 @RunWith(AndroidJUnit4::class)
-class GifSearchUITest {
+class GifSearchUIUnitTest {
 
     @get:Rule
     val composeRule = createComposeRule()
@@ -86,7 +86,7 @@ class GifSearchUITest {
             .onNodeWithTag(LIST_PORTRAIT_TAG)
             .onChildren()
             .onLast()
-            .assert(hasTestTag(RETRY_TAG))
+            .assert(hasTestTag(ITEM_RETRY_TAG))
     }
 
     @Test
@@ -111,7 +111,7 @@ class GifSearchUITest {
         }
         composeRule.waitUntil(timeoutMillis = 5000L) {
             composeRule
-                .onAllNodesWithTag(DELETE_TAG)
+                .onAllNodesWithTag(ITEM_DELETE_TAG)
                 .fetchSemanticsNodes()
                 .isNotEmpty()
         }

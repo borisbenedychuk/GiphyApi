@@ -16,6 +16,7 @@ android {
         applicationId = "com.example.gif_api"
         targetSdk = 33
         minSdk = 21
+        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_1_8
@@ -40,5 +41,8 @@ dependencies {
     implementation(deps.coilGif)
     implementation(deps.bundles.networking)
     implementation(deps.dagger)
+    androidTestImplementation(deps.bundles.androidXTest)
+    androidTestImplementation(deps.truth)
+    androidTestImplementation(deps.composeTest)
     kapt(deps.daggerCompiler)
 }

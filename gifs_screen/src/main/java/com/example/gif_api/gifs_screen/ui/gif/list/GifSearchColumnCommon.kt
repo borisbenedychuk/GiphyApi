@@ -40,10 +40,7 @@ import com.example.gif_api.R.*
 import com.example.gif_api.gifs_screen.models.gif.GifItem
 import com.example.gif_api.gifs_screen.models.gif.ImageState
 import com.example.gif_api.gifs_screen.theme.ui.GifApiTheme
-import com.example.gif_api.gifs_screen.ui.gif.DELETE_TAG
-import com.example.gif_api.gifs_screen.ui.gif.DeleteIcon
-import com.example.gif_api.gifs_screen.ui.gif.FOOTER_TAG
-import com.example.gif_api.gifs_screen.ui.gif.RETRY_TAG
+import com.example.gif_api.gifs_screen.ui.gif.*
 import com.example.gif_api.gifs_screen.utils.compose.fillMaxSmallestWidth
 import com.example.gif_api.gifs_screen.utils.compose.rememberInteractionSource
 import com.example.gif_api.gifs_screen.utils.compose.rememberState
@@ -64,7 +61,9 @@ fun LazyListScope.gifItems(
         key = { _, item -> item.originalUrl },
     ) { i, item ->
         GifSearchColumnItem(
-            modifier = Modifier.animateItemPlacement(),
+            modifier = Modifier
+                .testTag(ITEM_TAG + item.id)
+                .animateItemPlacement(),
             item = item,
             imageLoader = imageLoader,
             onItemClick = { onItemClick(i) },
@@ -87,7 +86,7 @@ fun LazyListScope.gifItems(
             item {
                 RetryIcon(
                     modifier = Modifier
-                        .testTag(RETRY_TAG)
+                        .testTag(ITEM_RETRY_TAG)
                         .padding(vertical = 50.dp)
                         .size(80.dp),
                     onRetryClick = onRetryClick,
@@ -141,6 +140,7 @@ fun GifSearchColumnItem(
             ImageState.LOADING -> {
                 ListLoadingIndicator(
                     modifier = Modifier
+                        .testTag(ITEM_LOADING_TAG)
                         .align(Alignment.Center)
                         .fillMaxSmallestWidth(GifApiTheme.dimensions.cardProgressBarWidthPercent)
                 )
@@ -158,7 +158,7 @@ fun GifSearchColumnItem(
                     item = item,
                     onDeleteItem = onDeleteItem,
                     modifier = Modifier
-                        .testTag(DELETE_TAG)
+                        .testTag(ITEM_DELETE_TAG)
                         .align(Alignment.TopEnd)
                         .padding(GifApiTheme.dimensions.cardDeleteButtonPadding)
                 )

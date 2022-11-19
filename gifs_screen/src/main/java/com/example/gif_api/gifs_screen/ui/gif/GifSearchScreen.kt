@@ -26,19 +26,20 @@ import com.example.gif_api.gifs_screen.models.gif.GifItem
 import com.example.gif_api.gifs_screen.models.gif.GifSearchAction
 import com.example.gif_api.gifs_screen.models.gif.GifSearchAction.*
 import com.example.gif_api.gifs_screen.models.gif.GifSearchState
+import com.example.gif_api.gifs_screen.ui.gif.di.DaggerGifSearchComponent
 import com.example.gif_api.gifs_screen.ui.gif.di.GifSearchComponent
 import com.example.gif_api.gifs_screen.ui.gif.list.GifSearchList
 import com.example.gif_api.gifs_screen.ui.gif.pager.GifSearchPager
 import com.example.gif_api.gifs_screen.utils.compose.fillMaxSmallestWidth
-import com.example.gif_api.gifs_screen.ui.gif.di.DaggerGifSearchComponent
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 @Composable
-fun GifSearchScreen() {
-    val component = getGifSearchComponent()
-    val viewModel = viewModel<GifSearchViewModel>(factory = component.viewModelFactory)
+fun GifSearchScreen(
+    component: GifSearchComponent = getGifSearchComponent(),
+    viewModel: GifSearchViewModel = viewModel(factory = component.viewModelFactory)
+) {
     val state by viewModel.gifSearchState.collectAsState(initial = GifSearchState())
     GifSearchUI(
         imageLoader = component.imageLoader,
@@ -87,6 +88,7 @@ fun GifSearchUI(
             ) {
                 OutlinedTextField(
                     modifier = Modifier
+                        .testTag(QUERY_TAG)
                         .padding(20.dp)
                         .fillMaxSmallestWidth(0.75f),
                     value = state.query,

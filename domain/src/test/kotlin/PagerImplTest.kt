@@ -12,24 +12,24 @@ import org.junit.Test
 @OptIn(ExperimentalCoroutinesApi::class)
 class PagerImplTest {
 
-    private lateinit var pagerImpl: Pager
+    private lateinit var pager: Pager
 
     private lateinit var mockGifRepository: MockGifRepository
 
     @Before
     fun preparePager() {
         mockGifRepository = MockGifRepository()
-        pagerImpl = Pager(mockGifRepository)
+        pager = Pager(mockGifRepository)
     }
 
     @Test
     fun `load 2 pages if cache is not fresh`(): Unit = runTest {
-        val resultDiff = async {
-            pagerImpl.newPages(QUERY, 0)
-        }
         mockGifRepository.cacheFresh = false
         mockGifRepository.listFinishedResult = successResult(false)
-        val pages = pagerImpl.pagesFlow.first()
+        val resultDiff = async {
+            pager.newPages(QUERY, 0)
+        }
+        val pages = pager.pagesFlow.first()
         val result = resultDiff.await()
         assertThat(result).isInstanceOf(Result.Success::class.java)
         assertThat((result as Result.Success).data).isEqualTo(false)
@@ -39,12 +39,12 @@ class PagerImplTest {
 
     @Test
     fun `load 1 page if cache is fresh`(): Unit = runTest {
-        val resultDiff = async {
-            pagerImpl.newPages(QUERY, 0)
-        }
         mockGifRepository.cacheFresh = true
         mockGifRepository.listFinishedResult = successResult(false)
-        val pages = pagerImpl.pagesFlow.first()
+        val resultDiff = async {
+            pager.newPages(QUERY, 0)
+        }
+        val pages = pager.pagesFlow.first()
         assertThat(pages.size).isEqualTo(10)
         val result = resultDiff.await()
         withAssertedCast<Result.Success<Boolean>>(result) {

@@ -11,18 +11,18 @@ import com.example.gif_api.gifs_screen.models.gif.ListPositionInfo
 import com.example.gif_api.gifs_screen.models.gif.asItem
 import com.example.gif_api.gifs_screen.ui.gif.GifSearchViewModel
 import com.google.common.truth.Truth.assertThat
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.*
-import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.runTest
-import kotlinx.coroutines.test.setMain
-import org.junit.Before
+import org.junit.Rule
 import org.junit.Test
 import org.mockito.kotlin.*
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class GifSearchViewModelTest {
+
+    @get:Rule
+    val mainCoroutineRule = MainCoroutineRule()
 
     private fun models(pages: Int = 3): List<GifModel> = List(PAGE_SIZE * pages) {
         GifModel(
@@ -31,11 +31,6 @@ class GifSearchViewModelTest {
             smallUrl = "smallUrl$it",
             title = it.toString(),
         )
-    }
-
-    @Before
-    fun setUp() {
-        Dispatchers.setMain(StandardTestDispatcher())
     }
 
     @Test
