@@ -13,7 +13,7 @@ import androidx.compose.ui.unit.dp
 import coil.ImageLoader
 import com.example.gif_api.gifs_screen.models.gif.GifItem
 import com.example.gif_api.gifs_screen.models.gif.ImageState
-import com.example.gif_api.gifs_screen.ui.gif.PAGER_LANDSCAPE_TAG
+import com.example.core_ui.PAGER_LANDSCAPE_TAG
 import com.example.gif_api.gifs_screen.utils.compose.rememberState
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.PagerState

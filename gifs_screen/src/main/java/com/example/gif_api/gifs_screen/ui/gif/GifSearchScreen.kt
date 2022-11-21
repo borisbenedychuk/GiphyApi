@@ -9,10 +9,13 @@ import androidx.compose.material.OutlinedTextField
 import androidx.compose.material.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.testTagsAsResourceId
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -21,6 +24,8 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.ImageLoader
 import coil.annotation.ExperimentalCoilApi
 import coil.memory.MemoryCache
+import com.example.core_ui.GLOBAL_LOADING_TAG
+import com.example.core_ui.QUERY_TAG
 import com.example.core_ui.getDependencies
 import com.example.gif_api.gifs_screen.models.gif.GifItem
 import com.example.gif_api.gifs_screen.models.gif.GifSearchAction
@@ -48,7 +53,7 @@ fun GifSearchScreen(
     )
 }
 
-@OptIn(ExperimentalAnimationApi::class)
+@OptIn(ExperimentalAnimationApi::class, ExperimentalComposeUiApi::class)
 @Composable
 fun GifSearchUI(
     imageLoader: ImageLoader,
@@ -58,6 +63,7 @@ fun GifSearchUI(
     val scope = rememberCoroutineScope()
     val initialIndex = state.currentIndex
     AnimatedContent(
+        modifier = Modifier.semantics { testTagsAsResourceId = true },
         transitionSpec = {
             if (targetState) {
                 scaleIn(initialScale = 0.8f) + fadeIn() with slideOutHorizontally { -it }

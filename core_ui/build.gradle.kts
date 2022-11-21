@@ -8,7 +8,7 @@ plugins {
 }
 
 android {
-    namespace = "com.example.gif_api"
+    namespace = "com.example.gif_api.ui"
     compileSdk = 33
     defaultConfig {
         minSdk = 21

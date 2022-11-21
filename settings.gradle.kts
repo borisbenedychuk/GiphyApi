@@ -6,6 +6,7 @@ include(":data")
 include(":domain")
 include(":core_ui")
 include(":gifs_screen")
+include(":benchmark")
 
 pluginManagement {
     repositories {

@@ -18,6 +18,11 @@ android {
         minSdk = 21
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
+    buildTypes.create("benchmark") {
+        signingConfig = signingConfigs.getByName("debug")
+        matchingFallbacks += listOf("release")
+        isDebuggable = false
+    }
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_1_8
         targetCompatibility = JavaVersion.VERSION_1_8

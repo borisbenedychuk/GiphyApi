@@ -1,4 +1,4 @@
-package com.example.gif_api.gifs_screen.ui.gif
+package com.example.core_ui
 
 const val PAGER_LANDSCAPE_TAG = "plt"
 const val PAGER_PORTRAIT_TAG = "ppt"

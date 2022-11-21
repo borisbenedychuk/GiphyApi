@@ -23,6 +23,10 @@ androidXTest = "1.4.0"
 mockWebServer = "4.10.0"
 agp = "7.3.1"
 kotlin = "1.7.20"
+uiAutomator = "2.2.0"
+androidXTestExt = "1.1.3"
+macrobenchmark = "1.1.1"
+baselineProfile = "1.2.0"
 
 [libraries]
 
@@ -57,6 +61,10 @@ androidXTestRunner = { module = "androidx.test:runner", version.ref = "androidXT
 androidXTestRules = { module = "androidx.test:rules", version.ref = "androidXTest" }
 composeTest = { module = "androidx.compose.ui:ui-test-junit4", version.ref = "compose" }
 composeTestManifest = { module = "androidx.compose.ui:ui-test-manifest", version.ref = "compose" }
+androidXTestExt = { module = "androidx.test.ext:junit", version.ref = "androidXTestExt" }
+uiAutomator =  { module = "androidx.test.uiautomator:uiautomator", version.ref = "uiAutomator" }
+macrobenchmark =  { module = "androidx.benchmark:benchmark-macro-junit4", version.ref = "macrobenchmark" }
+baselineProfile = { module = "androidx.profileinstaller:profileinstaller", version.ref = "baselineProfile" }
 inject = "javax.inject:javax.inject:1"
 
 [bundles]
@@ -70,6 +78,7 @@ compose = ["composeCore", "composeMaterial", "composeActivity", "composePager", 
 
 androidApplication = { id = "com.android.application", version.ref = "agp" }
 androidLibrary = { id = "com.android.library", version.ref = "agp" }
+androidTest = { id = "com.android.test", version.ref = "agp" }
 kotlinAndroid = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 kotlinSerialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 kotlinJvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }

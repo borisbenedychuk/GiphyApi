@@ -36,7 +36,8 @@ import coil.ImageLoader
 import coil.compose.AsyncImage
 import coil.compose.rememberAsyncImagePainter
 import coil.request.ImageRequest
-import com.example.gif_api.R.*
+import com.example.core_ui.*
+import com.example.gif_api.ui.R.*
 import com.example.gif_api.gifs_screen.models.gif.GifItem
 import com.example.gif_api.gifs_screen.models.gif.ImageState
 import com.example.gif_api.gifs_screen.theme.ui.GifApiTheme

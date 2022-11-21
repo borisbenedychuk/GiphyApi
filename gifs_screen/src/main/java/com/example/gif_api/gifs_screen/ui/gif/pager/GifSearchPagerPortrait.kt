@@ -16,13 +16,13 @@ import coil.ImageLoader
 import coil.compose.AsyncImage
 import coil.compose.rememberAsyncImagePainter
 import coil.request.ImageRequest
-import com.example.gif_api.R
 import com.example.gif_api.gifs_screen.models.gif.GifItem
 import com.example.gif_api.gifs_screen.models.gif.ImageState
 import com.example.gif_api.gifs_screen.models.gif.ImageState.*
-import com.example.gif_api.gifs_screen.ui.gif.LIST_ITEM_TAG
-import com.example.gif_api.gifs_screen.ui.gif.PAGER_PORTRAIT_TAG
+import com.example.core_ui.LIST_ITEM_TAG
+import com.example.core_ui.PAGER_PORTRAIT_TAG
 import com.example.gif_api.gifs_screen.utils.compose.rememberState
+import com.example.gif_api.ui.R
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.PagerState

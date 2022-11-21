@@ -13,8 +13,8 @@ import coil.ImageLoader
 import com.example.gif_api.gifs_screen.models.gif.BoundSignal
 import com.example.gif_api.gifs_screen.models.gif.GifItem
 import com.example.gif_api.gifs_screen.models.gif.ListPositionInfo
-import com.example.gif_api.gifs_screen.ui.gif.LIST_LANDSCAPE_TAG
-import com.example.gif_api.gifs_screen.ui.gif.LIST_PORTRAIT_TAG
+import com.example.core_ui.LIST_LANDSCAPE_TAG
+import com.example.core_ui.LIST_PORTRAIT_TAG
 import com.example.gif_api.gifs_screen.utils.compose.isInLandScape
 
 @Composable

@@ -3,8 +3,11 @@ package com.example.gif_api.gifs_screen
 import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.test.core.app.ApplicationProvider
-import androidx.test.ext.junit.runners.AndroidJUnit4
 import coil.ImageLoader
+import com.example.core_ui.LIST_LANDSCAPE_TAG
+import com.example.core_ui.LIST_PORTRAIT_TAG
+import com.example.core_ui.PAGER_LANDSCAPE_TAG
+import com.example.core_ui.PAGER_PORTRAIT_TAG
 import com.example.gif_api.gifs_screen.models.gif.GifItem
 import com.example.gif_api.gifs_screen.models.gif.GifSearchState
 import com.example.gif_api.gifs_screen.ui.gif.*
